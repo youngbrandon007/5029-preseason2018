@@ -18,7 +18,6 @@ import static java.lang.Math.sqrt;
 
 public class PineappleMecanumDrive extends PineappleDriveAbstract {
 
-
     PineappleMecanumDrive(PineappleResources r) {
         super(r);
     }
@@ -54,6 +53,7 @@ public class PineappleMecanumDrive extends PineappleDriveAbstract {
 
 
     }
+
     public void updateMecanum(Gamepad pad, double scale) {
 
         double angle = mecDirectionFromJoystick(pad);
@@ -104,51 +104,6 @@ public class PineappleMecanumDrive extends PineappleDriveAbstract {
         setMotor(PineappleEnum.MotorLoc.RIGHTFRONT, multipliers[1] * scale, false);
         setMotor(PineappleEnum.MotorLoc.LEFTBACK, multipliers[2] * scale, false);
         setMotor(PineappleEnum.MotorLoc.RIGHTBACK, multipliers[3] * scale, false);
-
-    }
-
-
-    public void encoderMecanum(double angle, double speed, String dis, double wheelSize, PineappleGyroSensor gyroSensor) throws InterruptedException {
-        double defaultDirection = gyroSensor.getValue(PineappleEnum.PineappleSensorEnum.GSHEADING);
-
-        angle = angle * Math.PI / 180;
-
-        PineappleEnum.MotorValueType type = getUnit(dis);
-        double distance = getVal(dis);
-
-        int counts = PineappleStaticFunction.distToCounts(distance, type, wheelSize, getDriveCPR());
-
-        double rotation = 0.0;
-
-        double sinDir = sin(angle);
-        double cosDir = cos(angle);
-        int LFTarget = (int) (counts * sinDir);
-        int RFTarget = (int) (counts * cosDir);
-        int LBTarget = (int) (counts * -cosDir);
-        int RBTarget = (int) (counts * -sinDir);
-
-
-        resources.feedBack.sayFeedBack("LeftFront Target", LFTarget);
-        resources.feedBack.sayFeedBack("RightFront Target", RFTarget);
-        resources.feedBack.sayFeedBack("LeftBack Target", LBTarget);
-        resources.feedBack.sayFeedBack("RightBack Target", RBTarget);
-        resources.telemetry.update();
-
-        Thread.sleep(4000);
-
-        startEncoderDrive(PineappleEnum.MotorLoc.LEFTFRONT, 0, LFTarget);
-        startEncoderDrive(PineappleEnum.MotorLoc.RIGHTFRONT, 0, RFTarget);
-        startEncoderDrive(PineappleEnum.MotorLoc.LEFTBACK, 0, LBTarget);
-        startEncoderDrive(PineappleEnum.MotorLoc.RIGHTBACK, 0, RBTarget);
-
-        setMecanum(angle, speed, rotation, 1);
-
-        while (resources.linearOpMode.opModeIsActive() && isBusy()) {
-            //rotation = (gyroSensor.getValue(PineappleEnum.PineappleSensorEnum.GSHEADING) - defaultDirection)/90;
-            setMecanum(angle, speed, rotation, 1);
-            resources.telemetry.update();
-        }
-        stop();
 
     }
 
