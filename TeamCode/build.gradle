@@ -13,3 +13,10 @@
 
 // Include common definitions from above.
 apply from: '../build.common.gradle'
+
+dependencies {
+    //    compile project(path: ':openCV')
+    compile project(':openCVLibrary341')
+    compile (name:'navx_ftc-release', ext:'aar')
+
+}
