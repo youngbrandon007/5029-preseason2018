@@ -20,3 +20,9 @@ dependencies {
     compile (name:'navx_ftc-release', ext:'aar')
 
 }
+
+android {
+
+    buildToolsVersion '26.0.2'
+
+}
