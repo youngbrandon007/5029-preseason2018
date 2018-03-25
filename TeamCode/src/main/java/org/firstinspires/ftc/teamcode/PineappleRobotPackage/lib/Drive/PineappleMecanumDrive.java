@@ -74,6 +74,18 @@ public class PineappleMecanumDrive extends PineappleDriveAbstract {
 
     }
 
+    public void updateMecanumThirdPerson(Gamepad pad, double scale, double gyroAngle){
+        double angle = mecDirectionFromJoystick(pad);
+        double speed = mecSpeedFromJoystick(pad);
+        double rotation = mecSpinFromJoystick(pad);
+
+        setMecanumThridPerson(angle, speed, rotation, scale, gyroAngle);
+    }
+
+    public void setMecanumThridPerson(double angle, double speed, double rotation, double scale, double gyroAngle){
+        setMecanum(angle - gyroAngle, speed, rotation, scale);
+    }
+
     public void setMecanum(double angle, double speed, double rotation, double scale) {
         angle += Math.PI / 4;
         speed *= Math.sqrt(2);
