@@ -130,11 +130,6 @@ public class WorldConstants {
                             {{alignment.ALIGNRIGHTUP, alignment.ALIGNRIGHTUP, alignment.ALIGNRIGHTDOWN  },{alignment.ALIGNLEFTDOWN, alignment.ALIGNLEFTDOWN, alignment.ALIGNLEFTUP}},
                             {{alignment.ALIGNRIGHTUP, alignment.ALIGNRIGHTUP, alignment.ALIGNRIGHTUP  },{alignment.ALIGNLEFTDOWN, alignment.ALIGNLEFTDOWN, alignment.ALIGNLEFTDOWN}}
                     };
-            public static final double[][] AlignDrivingDirection =
-                    {
-                            {0,0,180},
-                            {0, 0,0}
-                    };
             public static final boolean[][][] AlignSwitchClicked =
                     {
                             {{false, false, true}, {true, true, false}},
@@ -144,6 +139,10 @@ public class WorldConstants {
                     {
                             {22 , 18, 16},
                             {0,0,0}
+                    };
+            public static final double[][] AlignDivingOffPlatformEncoderTillTurn =
+                    {
+                            {14, 10, 8}
                     };
             public static final double[] AlignDriveOffPlatformDirection =
                     {270, 90};
