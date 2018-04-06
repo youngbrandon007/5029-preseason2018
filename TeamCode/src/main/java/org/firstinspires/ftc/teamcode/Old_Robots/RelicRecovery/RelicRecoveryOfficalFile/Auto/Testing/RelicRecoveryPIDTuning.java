@@ -41,7 +41,7 @@ public class RelicRecoveryPIDTuning extends RelicRecoveryConfigV2 {
         telemetry.addData("PID", "Tuning Finished Press play");
         telemetry.update();
         waitForStart();
-        robotHandler.auto.gyroTurnPID(90, P, I, D, navx_device);
+        //robotHandler.auto.gyroTurnPID(90, P, I, D, navx_device);
 
     }
 }

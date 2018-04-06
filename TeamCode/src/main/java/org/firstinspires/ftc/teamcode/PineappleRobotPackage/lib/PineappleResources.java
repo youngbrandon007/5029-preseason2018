@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode.PineappleRobotPackage.lib;
 
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -20,15 +20,15 @@ public class PineappleResources {
 
     public PineappleFeedBack feedBack;
 
-    public LinearOpMode linearOpMode;
+    public OpMode opMode;
 
     public Telemetry telemetry;
 
     public HardwareMap hardwareMap;
 
-    PineappleResources(LinearOpMode LOM){
+    PineappleResources(OpMode LOM){
         storage = new PineappleStorage();
-        linearOpMode = LOM;
+        opMode = LOM;
         telemetry = LOM.telemetry;
         feedBack = new PineappleFeedBack(telemetry);
         hardwareMap = LOM.hardwareMap;

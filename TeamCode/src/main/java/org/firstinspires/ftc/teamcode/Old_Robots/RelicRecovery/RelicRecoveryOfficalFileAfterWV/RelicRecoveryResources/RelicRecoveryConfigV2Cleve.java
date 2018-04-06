@@ -11,7 +11,7 @@ import org.firstinspires.ftc.teamcode.PineappleRobotPackage.lib.PineappleRobot;
 import org.firstinspires.ftc.teamcode.PineappleRobotPackage.lib.PineappleServo;
 import org.firstinspires.ftc.teamcode.PineappleRobotPackage.lib.Sensors.PineappleTouchSensor;
 import org.firstinspires.ftc.teamcode.Old_Robots.RelicRecovery.RelicRecoveryOfficalFile.RelicResources.RelicRecoveryConstants;
-import org.firstinspires.ftc.teamcode.Old_Robots.RelicRecovery.RelicRecoveryOfficalFile.RelicResources.RelicRecoveryEnums;
+import org.firstinspires.ftc.teamcode.RelicRecoveryWorlds.RelicRecoveryEnums;
 
 /**
  * Created by Brandon on 12/5/2017.

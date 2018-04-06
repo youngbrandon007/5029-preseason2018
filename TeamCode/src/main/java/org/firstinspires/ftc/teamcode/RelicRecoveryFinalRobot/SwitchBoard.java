@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
  * Created by Brandon on 1/8/2018.
  */
 @Autonomous(name = "Switch Board")
+@Disabled
 public class SwitchBoard extends Config{
     @Override
     public void runOpMode() throws InterruptedException {

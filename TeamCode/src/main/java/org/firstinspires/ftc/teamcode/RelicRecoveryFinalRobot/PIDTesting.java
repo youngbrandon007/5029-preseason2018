@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.RelicRecoveryFinalRobot;
 
 import com.kauailabs.navx.ftc.navXPIDController;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.hardware.AnalogInput;
 
 import java.text.DecimalFormat;
@@ -10,6 +11,7 @@ import java.text.DecimalFormat;
  * Created by ftcpi on 2/7/2018.
  */
 @Autonomous(name = "PID")
+@Disabled
 public class PIDTesting extends Config{
     @Override
     public void runOpMode() throws InterruptedException {
@@ -44,7 +46,7 @@ public class PIDTesting extends Config{
         telemetry.addData("PID", "Tuning Finished Press play");
         telemetry.update();
         waitForStart();
-        robotHandler.auto.gyroTurnPID(90, P, I, D, navx_device);
+        //robotHandler.auto.gyroTurnPID(90, P, I, D, navx_device);
 
     }
 }

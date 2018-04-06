@@ -9,105 +9,105 @@ import org.firstinspires.ftc.teamcode.PineappleRobotPackage.lib.PineappleRobot;
  */
 
 public class RelicRecoveryVuforia {
-    public static void alignWithGyro(VuforiaTrackableDefaultListener listener, VectorF vector, PineappleRobot robotHandler) throws InterruptedException {
+//    public static void alignWithGyro(VuforiaTrackableDefaultListener listener, VectorF vector, PineappleRobot robotHandler) throws InterruptedException {
+//
+//        boolean go = true;
+//
+//        while(go && robotHandler.opModeIsActive()){
+//            if(null != listener.getPose()){
+//
+//                double robotAngle = getRobotAngle(listener) - 45;
+//                robotAngle += (robotAngle< 0) ? 360: 0;
+//
+//                double distance = getDistance(listener, vector);
+//                double moveAngle = getMoveAngle(listener, vector)+90;
+//                moveAngle -=(moveAngle>360) ? 360:0;
+//                double rotation;
+//
+//                robotHandler.sayFeedBack("Angle°", robotAngle);
+//                robotHandler.sayFeedBack("Distance", distance);
+//                robotHandler.sayFeedBack("Drive°", moveAngle);
+//                robotHandler.updateFeedBack();
+//                //Robot Rotation First
+//                if (robotAngle > 5 && robotAngle < 180) {
+//                    //Put Gyro here
+////                    rotation = .1;
+////                    robotHandler.drive.tank.setPower(rotation, rotation);
+//                } else if (robotAngle < 355 && robotAngle > 179) {
+//                    //and here
+////                    rotation = -.1;
+////                    robotHandler.drive.tank.setPower(rotation, rotation);
+////                    Thread.sleep(100);
+////                    robotHandler.drive.stop();
+////                    Thread.sleep(50);
+//                }else{
+//                    //Robot Movement
+//                    if(distance > 50) {
+//                        robotHandler.drive.mecanum.setMecanum(moveAngle, .5, 0, 1);
+//                    }else if(distance > 5){
+//                        robotHandler.drive.mecanum.setMecanum(moveAngle, .3, 0, 1);
+//                        Thread.sleep(100);
+//                        robotHandler.drive.stop();
+//                        Thread.sleep(50);
+//                    }else{
+//                        go = false;
+//                    }
+//                }
+//            }else{
+//
+//            }
+//        }
+//        robotHandler.drive.stop();
+//    }
 
-        boolean go = true;
 
-        while(go && robotHandler.opModeIsActive()){
-            if(null != listener.getPose()){
-
-                double robotAngle = getRobotAngle(listener) - 45;
-                robotAngle += (robotAngle< 0) ? 360: 0;
-
-                double distance = getDistance(listener, vector);
-                double moveAngle = getMoveAngle(listener, vector)+90;
-                moveAngle -=(moveAngle>360) ? 360:0;
-                double rotation;
-
-                robotHandler.sayFeedBack("Angle°", robotAngle);
-                robotHandler.sayFeedBack("Distance", distance);
-                robotHandler.sayFeedBack("Drive°", moveAngle);
-                robotHandler.updateFeedBack();
-                //Robot Rotation First
-                if (robotAngle > 5 && robotAngle < 180) {
-                    //Put Gyro here
+//    public static void align(VuforiaTrackableDefaultListener listener, VectorF vector, PineappleRobot robotHandler) throws InterruptedException {
+//
+//        boolean go = true;
+//
+//        while(go && robotHandler.opModeIsActive()){
+//            if(null != listener.getPose()){
+//
+//                double robotAngle = getRobotAngle(listener) - 45;
+//                robotAngle += (robotAngle< 0) ? 360: 0;
+//
+//                double distance = getDistance(listener, vector);
+//                double moveAngle = getMoveAngle(listener, vector)+90;
+//                moveAngle -=(moveAngle>360) ? 360:0;
+//                double rotation;
+//
+//                robotHandler.sayFeedBack("Angle°", robotAngle);
+//                robotHandler.sayFeedBack("Distance", distance);
+//                robotHandler.sayFeedBack("Drive°", moveAngle);
+//                robotHandler.updateFeedBack();
+//                //Robot Rotation First
+//                if (robotAngle > 5 && robotAngle < 180) {
 //                    rotation = .1;
 //                    robotHandler.drive.tank.setPower(rotation, rotation);
-                } else if (robotAngle < 355 && robotAngle > 179) {
-                    //and here
+//                } else if (robotAngle < 355 && robotAngle > 179) {
 //                    rotation = -.1;
 //                    robotHandler.drive.tank.setPower(rotation, rotation);
 //                    Thread.sleep(100);
 //                    robotHandler.drive.stop();
 //                    Thread.sleep(50);
-                }else{
-                    //Robot Movement
-                    if(distance > 50) {
-                        robotHandler.drive.mecanum.setMecanum(moveAngle, .5, 0, 1);
-                    }else if(distance > 5){
-                        robotHandler.drive.mecanum.setMecanum(moveAngle, .3, 0, 1);
-                        Thread.sleep(100);
-                        robotHandler.drive.stop();
-                        Thread.sleep(50);
-                    }else{
-                        go = false;
-                    }
-                }
-            }else{
-
-            }
-        }
-        robotHandler.drive.stop();
-    }
-
-
-    public static void align(VuforiaTrackableDefaultListener listener, VectorF vector, PineappleRobot robotHandler) throws InterruptedException {
-
-        boolean go = true;
-
-        while(go && robotHandler.opModeIsActive()){
-            if(null != listener.getPose()){
-
-                double robotAngle = getRobotAngle(listener) - 45;
-                robotAngle += (robotAngle< 0) ? 360: 0;
-
-                double distance = getDistance(listener, vector);
-                double moveAngle = getMoveAngle(listener, vector)+90;
-                moveAngle -=(moveAngle>360) ? 360:0;
-                double rotation;
-
-                robotHandler.sayFeedBack("Angle°", robotAngle);
-                robotHandler.sayFeedBack("Distance", distance);
-                robotHandler.sayFeedBack("Drive°", moveAngle);
-                robotHandler.updateFeedBack();
-                //Robot Rotation First
-                if (robotAngle > 5 && robotAngle < 180) {
-                    rotation = .1;
-                    robotHandler.drive.tank.setPower(rotation, rotation);
-                } else if (robotAngle < 355 && robotAngle > 179) {
-                    rotation = -.1;
-                    robotHandler.drive.tank.setPower(rotation, rotation);
-                    Thread.sleep(100);
-                    robotHandler.drive.stop();
-                    Thread.sleep(50);
-                }else{
-                    //Robot Movement
-                    if(distance > 50) {
-                        robotHandler.drive.mecanum.setMecanum(moveAngle, .5, 0, 1);
-                    }else if(distance > 5){
-                        robotHandler.drive.mecanum.setMecanum(moveAngle, .3, 0, 1);
-                        Thread.sleep(100);
-                        robotHandler.drive.stop();
-                        Thread.sleep(50);
-                    }else{
-                        go = false;
-                    }
-                }
-            }else{
-            }
-        }
-        robotHandler.drive.stop();
-    }
+//                }else{
+//                    //Robot Movement
+//                    if(distance > 50) {
+//                        robotHandler.drive.mecanum.setMecanum(moveAngle, .5, 0, 1);
+//                    }else if(distance > 5){
+//                        robotHandler.drive.mecanum.setMecanum(moveAngle, .3, 0, 1);
+//                        Thread.sleep(100);
+//                        robotHandler.drive.stop();
+//                        Thread.sleep(50);
+//                    }else{
+//                        go = false;
+//                    }
+//                }
+//            }else{
+//            }
+//        }
+//        robotHandler.drive.stop();
+//    }
 
     public static double getRobotAngle(VuforiaTrackableDefaultListener listener){
         VectorF angles = anglesFromTarget(listener);

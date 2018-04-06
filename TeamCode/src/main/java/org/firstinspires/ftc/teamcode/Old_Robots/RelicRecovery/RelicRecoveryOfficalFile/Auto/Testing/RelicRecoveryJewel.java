@@ -55,11 +55,11 @@ public class RelicRecoveryJewel extends RelicRecoveryConfigV2 {
             Thread.sleep(500);
         }
         if (state == PineappleEnum.JewelState.NON_NON) {
-            telemetry.addData("Config ", "NON");
+            telemetry.addData("WorldConfig ", "NON");
         } else if (state == PineappleEnum.JewelState.BLUE_RED) {
-            telemetry.addData("Config ", "BLUE RED");
+            telemetry.addData("WorldConfig ", "BLUE RED");
         } else if (state == PineappleEnum.JewelState.RED_BLUE) {
-            telemetry.addData("Config ", "RED BLUE");
+            telemetry.addData("WorldConfig ", "RED BLUE");
         }
         telemetry.update();
 

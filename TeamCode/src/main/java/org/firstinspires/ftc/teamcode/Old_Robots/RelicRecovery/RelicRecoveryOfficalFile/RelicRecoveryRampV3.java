@@ -94,7 +94,7 @@ public class RelicRecoveryRampV3 extends RelicRecoveryAbstractAutonomous {
         totalTime.reset();
 
         //testing
-        //auto = Auto.DRIVEOFFPLATFROM
+        //auto = WorldAuto.DRIVEOFFPLATFROM
 
         while (opModeIsActive()) {
             telemetry.addData("Time(milliseconds)",totalTime.milliseconds());

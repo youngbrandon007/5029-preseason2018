@@ -11,7 +11,7 @@ import org.firstinspires.ftc.teamcode.Old_Robots.RelicRecovery.RelicRecoveryOffi
 /**
  * Created by A Pineapple on 999/999/2021.
  */
-@TeleOp(name = "Tele Op", group = "Linear Opmode")
+@TeleOp(name = "WorldTele Op", group = "Linear Opmode")
 @Disabled
 public class RelicRecoveryTeleOp extends RelicRecoveryConfigV2 {
 

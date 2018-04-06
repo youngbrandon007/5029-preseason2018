@@ -14,7 +14,7 @@ import org.firstinspires.ftc.teamcode.PineappleRobotPackage.lib.PineappleEnum;
 import org.firstinspires.ftc.teamcode.PineappleRobotPackage.lib.PineappleRobotConstants;
 import org.firstinspires.ftc.teamcode.PineappleRobotPackage.lib.Vuforia.PineappleRelicRecoveryVuforia;
 import org.firstinspires.ftc.teamcode.Old_Robots.RelicRecovery.RelicRecoveryOfficalFile.RelicResources.RelicRecoveryConstants;
-import org.firstinspires.ftc.teamcode.Old_Robots.RelicRecovery.RelicRecoveryOfficalFile.RelicResources.RelicRecoveryEnums;
+import org.firstinspires.ftc.teamcode.RelicRecoveryWorlds.RelicRecoveryEnums;
 import org.firstinspires.ftc.teamcode.Old_Robots.RelicRecovery.RelicRecoveryOfficalFileAfterWV.RelicRecoveryResources.RelicRecoveryConfigV2Cleve;
 
 import static org.firstinspires.ftc.teamcode.PineappleRobotPackage.lib.PineappleEnum.JewelState.BLUE_RED;
@@ -23,7 +23,7 @@ import static org.firstinspires.ftc.teamcode.PineappleRobotPackage.lib.Pineapple
 /**
  * Created by ftcpi on 1/3/2018.
  */
-@Autonomous(name = "Auto Clev")
+@Autonomous(name = "WorldAuto Clev")
 public class RelicRecoveryAutonomousMainVCLEV extends RelicRecoveryConfigV2Cleve {
     enum Init {
         CALIBGYRO, FINDIMAGE, FINDKEY, GETJEWELCONFIG
@@ -103,14 +103,14 @@ public class RelicRecoveryAutonomousMainVCLEV extends RelicRecoveryConfigV2Cleve
                     x++;
                     switch (state) {
                         case NON_NON:
-                            telemetry.addData("Config " + x + ": ", "NON NON");
+                            telemetry.addData("WorldConfig " + x + ": ", "NON NON");
                             break;
                         case BLUE_RED:
                             state = RED_BLUE;
-                            telemetry.addData("Config " + x + ": ", "RED BLUE");
+                            telemetry.addData("WorldConfig " + x + ": ", "RED BLUE");
                             break;
                         case RED_BLUE:
-                            telemetry.addData("Config " + x + ": ", "BLUE RED");
+                            telemetry.addData("WorldConfig " + x + ": ", "BLUE RED");
                             state = BLUE_RED;
                             break;
                     }

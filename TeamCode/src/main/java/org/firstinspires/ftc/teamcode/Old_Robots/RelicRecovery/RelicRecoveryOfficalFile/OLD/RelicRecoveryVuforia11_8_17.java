@@ -42,7 +42,7 @@ public class RelicRecoveryVuforia11_8_17 extends RelicRecoveryConfig{
             listener.getPose();
         }
 
-        RelicRecoveryVuforia.align(listener,vector,robotHandler);
+        //RelicRecoveryVuforia.align(listener,vector,robotHandler);
     }
 
 }

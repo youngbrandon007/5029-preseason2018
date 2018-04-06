@@ -16,7 +16,7 @@ import org.firstinspires.ftc.teamcode.Old_Robots.RelicRecovery.RelicRecoveryOffi
 import org.firstinspires.ftc.teamcode.PineappleRobotPackage.lib.PineappleEnum;
 import org.firstinspires.ftc.teamcode.PineappleRobotPackage.lib.PineappleServo;
 import org.firstinspires.ftc.teamcode.Old_Robots.RelicRecovery.RelicRecoveryOfficalFile.RelicResources.RelicRecoveryConfigV2;
-import org.firstinspires.ftc.teamcode.Old_Robots.RelicRecovery.RelicRecoveryOfficalFile.RelicResources.RelicRecoveryEnums;
+import org.firstinspires.ftc.teamcode.RelicRecoveryWorlds.RelicRecoveryEnums;
 
 import java.text.DecimalFormat;
 import java.util.Arrays;

@@ -10,5 +10,5 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 abstract public class PineappleConfigOpMode extends OpMode{
     public PineappleRobot robotHandler;
 
-    abstract public void config(LinearOpMode linearOpMode);
+    abstract public void config(OpMode opMode);
 }

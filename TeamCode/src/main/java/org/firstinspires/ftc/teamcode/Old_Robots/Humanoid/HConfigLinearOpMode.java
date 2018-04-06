@@ -28,8 +28,8 @@ public class HConfigLinearOpMode extends PineappleConfigLinearOpMode {
     public void config(LinearOpMode linearOpMode) {
         robot = new PineappleRobot(linearOpMode);
 
-//        HandFourFingers = linearOpMode.hardwareMap.servo.get("HFF");
-//        Head = linearOpMode.hardwareMap.servo.get("H");
+//        HandFourFingers = opMode.hardwareMap.servo.get("HFF");
+//        Head = opMode.hardwareMap.servo.get("H");
         RightDrive = robot.motorHandler.newDriveMotor("RD", PineappleEnum.MotorLoc.RIGHT, PineappleEnum.MotorType.NEV60);
         LeftDrive = robot.motorHandler.newDriveMotor("LD", PineappleEnum.MotorLoc.LEFT, PineappleEnum.MotorType.NEV60);
         RightDrive.maxPower = 0.5;

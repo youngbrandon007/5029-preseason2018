@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode.PineappleRobotPackage.lib;
 
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.teamcode.PineappleRobotPackage.lib.Auto.PineappleAutoDrive;
@@ -31,7 +31,7 @@ public class PineappleRobot{
 
     public PineappleServoHandler servoHandler;
 
-    public PineappleRobot(LinearOpMode LOM){
+    public PineappleRobot(OpMode LOM){
         resources = new PineappleResources(LOM);
         motorHandler = new PineappleMotorHandler(resources);
         drive = new PineappleDrive(resources);
@@ -39,10 +39,6 @@ public class PineappleRobot{
         sensorHandler = new PineappleSensorHandler(resources);
         servoHandler = new PineappleServoHandler(resources);
         switchBoard = new PineappleSwitchBoard(resources);
-    }
-
-    public boolean opModeIsActive(){
-        return resources.linearOpMode.opModeIsActive();
     }
 
     public void addVuforia(int maxTargets, VuforiaLocalizer.CameraDirection direction,  VuforiaLocalizer.Parameters.CameraMonitorFeedback feedback, String vuforiaLicenseKey) {
