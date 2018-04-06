@@ -102,7 +102,6 @@ public class WorldAuto extends WorldConfig {
 
     double prervTime;
     double prervPos;
-    int x = 0;
 
     double TARGETANGLE = 0.0;
     double PIDrotationOut = 0;
