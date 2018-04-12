@@ -2,12 +2,16 @@ package org.firstinspires.ftc.teamcode.RelicRecoveryWorlds;
 
 import com.kauailabs.navx.ftc.AHRS;
 import com.kauailabs.navx.ftc.navXPIDController;
+import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.OpticalDistanceSensor;
 
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.teamcode.FontFormating;
 import org.firstinspires.ftc.teamcode.PineappleRobotPackage.lib.PineappleConfigOpMode;
 import org.firstinspires.ftc.teamcode.PineappleRobotPackage.lib.PineappleEnum;
@@ -64,21 +68,14 @@ public abstract class WorldConfig extends PineappleConfigOpMode {
     public PineappleSensor csJewelRight;
     public OpticalDistanceSensor opticalGlyph;
     public ColorSensor glyphColor;
+    public ColorSensor backGlyphColor;
+    public DistanceSensor glyphDist;
 
     //GYRO
-    public final int NAVX_DIM_I2C_PORT = 0;
-    public AHRS navx_device;
-    public navXPIDController yawPIDController;
-    public final byte NAVX_DEVICE_UPDATE_RATE_HZ = 50;
-    public final double TOLERANCE_DEGREES = 2.0;
-    public final double MIN_MOTOR_OUTPUT_VALUE = -1.0;
-    public final double MAX_MOTOR_OUTPUT_VALUE = 1.0;
-    public final double YAW_PID_P = WorldConstants.PID.P;
-    public final double YAW_PID_I = WorldConstants.PID.I;
-    public final double YAW_PID_D = WorldConstants.PID.D;
-    public navXPIDController.PIDResult yawPIDResult;
 
-    public boolean calibration_complete = false;
+    public WorldPID PID = new WorldPID(WorldConstants.PID.P,WorldConstants.PID.I,WorldConstants.PID.D);
+    public double setpoint=0;
+
 
 
     //SWITCH BOARD
@@ -89,12 +86,15 @@ public abstract class WorldConfig extends PineappleConfigOpMode {
     public boolean switchDelayEnabled = false;
     public double slideDelay = 0.0;
     //Still need detecting
-    public boolean switchJewels = true;
+    public boolean switchJewels = false;
     public boolean switchMoreGlyphs = true;
-    public boolean switchPID = true;
+    public boolean switchPID = false;
     public boolean switchHitBadJewel = false;
 
+    BNO055IMU imu;
 
+    // State used for updating telemetry
+    Orientation angles;
 
     @Override
     public void config(OpMode opmode) {
@@ -127,39 +127,40 @@ public abstract class WorldConfig extends PineappleConfigOpMode {
         csJewelLeft = robotHandler.sensorHandler.newColorSensor("CSJL");
         csJewelRight = robotHandler.sensorHandler.newColorSensor("CSJR");
 
-        navx_device = AHRS.getInstance(hardwareMap.deviceInterfaceModule.get("dim"),
-                NAVX_DIM_I2C_PORT,
-                AHRS.DeviceDataType.kProcessedData,
-                NAVX_DEVICE_UPDATE_RATE_HZ);
-        yawPIDController = new navXPIDController(navx_device,
-                navXPIDController.navXTimestampedDataSource.YAW);
-        yawPIDController.setSetpoint(0);
-        yawPIDController.setContinuous(true);
-        yawPIDController.setOutputRange(MIN_MOTOR_OUTPUT_VALUE, MAX_MOTOR_OUTPUT_VALUE);
-        yawPIDController.setTolerance(navXPIDController.ToleranceType.ABSOLUTE, TOLERANCE_DEGREES);
-        yawPIDController.setPID(YAW_PID_P, YAW_PID_I, YAW_PID_D);
-        yawPIDController.enable(true);
-
         limitLeftBack = hardwareMap.digitalChannel.get("LLB");
         limitLeftSide = hardwareMap.digitalChannel.get("LLS");
         limitRightBack = hardwareMap.digitalChannel.get("LRB");
         limitRightSide = hardwareMap.digitalChannel.get("LRS");
 
-        opticalGlyph = hardwareMap.opticalDistanceSensor.get("OPT");
+        //opticalGlyph = hardwareMap.opticalDistanceSensor.get("OPT");
         glyphColor = hardwareMap.colorSensor.get("GC");
+        backGlyphColor = hardwareMap.get(ColorSensor.class,"GCD");
+        glyphDist = hardwareMap.get(DistanceSensor.class,"GCD");
+        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+        parameters.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
+        //parameters.accelUnit           = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+        //parameters.calibrationDataFile = "BNO055IMUCalibration.json"; // see the calibration sample opmode
+        parameters.loggingEnabled      = true;
+        parameters.loggingTag          = "IMU";
+        //parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
+        // Retrieve and initialize the IMU. We expect the IMU to be attached to an I2C port
+        // on a Core Device Interface Module, configured to be a sensor of type "AdaFruit IMU",
+        // and named "imu".
+        imu = hardwareMap.get(BNO055IMU.class, "imu");
+        imu.initialize(parameters);
     }
 
     public void loadSwitchBoard() {
-       switchColor = (robotHandler.switchBoard.loadDigital("color")) ? RelicRecoveryEnums.AutoColor.RED : RelicRecoveryEnums.AutoColor.BLUE;
-        switchPosition = (robotHandler.switchBoard.loadDigital("position")) ? RelicRecoveryEnums.StartingPosition.FRONT : RelicRecoveryEnums.StartingPosition.BACK;
-        switchColorPosition = (switchColor == RelicRecoveryEnums.AutoColor.RED) ? (switchPosition == RelicRecoveryEnums.StartingPosition.FRONT) ? RelicRecoveryEnums.ColorPosition.REDFRONT : RelicRecoveryEnums.ColorPosition.REDBACK : (switchPosition == RelicRecoveryEnums.StartingPosition.FRONT) ? RelicRecoveryEnums.ColorPosition.BLUEFRONT : RelicRecoveryEnums.ColorPosition.BLUEBACK;
-        switchDelayEnabled = robotHandler.switchBoard.loadDigital("delayEnabled");
-        slideDelay = (switchDelayEnabled) ? Math.round((1-robotHandler.switchBoard.loadAnalog("delay"))*30)/2 : 0.0;
-
-        switchMoreGlyphs = robotHandler.switchBoard.loadDigital("moreGlyph");
-        switchPID = robotHandler.switchBoard.loadDigital("PID");
-        switchJewels = robotHandler.switchBoard.loadDigital("jewel");
-        switchHitBadJewel = robotHandler.switchBoard.loadDigital("badJewel");
+//       switchColor = (robotHandler.switchBoard.loadDigital("color")) ? RelicRecoveryEnums.AutoColor.RED : RelicRecoveryEnums.AutoColor.BLUE;
+//        switchPosition = (robotHandler.switchBoard.loadDigital("position")) ? RelicRecoveryEnums.StartingPosition.FRONT : RelicRecoveryEnums.StartingPosition.BACK;
+//        switchColorPosition = (switchColor == RelicRecoveryEnums.AutoColor.RED) ? (switchPosition == RelicRecoveryEnums.StartingPosition.FRONT) ? RelicRecoveryEnums.ColorPosition.REDFRONT : RelicRecoveryEnums.ColorPosition.REDBACK : (switchPosition == RelicRecoveryEnums.StartingPosition.FRONT) ? RelicRecoveryEnums.ColorPosition.BLUEFRONT : RelicRecoveryEnums.ColorPosition.BLUEBACK;
+//        switchDelayEnabled = robotHandler.switchBoard.loadDigital("delayEnabled");
+//        slideDelay = (switchDelayEnabled) ? Math.round((1-robotHandler.switchBoard.loadAnalog("delay"))*30)/2 : 0.0;
+//
+//        switchMoreGlyphs = robotHandler.switchBoard.loadDigital("moreGlyph");
+//        switchPID = robotHandler.switchBoard.loadDigital("PID");
+//        switchJewels = robotHandler.switchBoard.loadDigital("jewel");
+//        switchHitBadJewel = robotHandler.switchBoard.loadDigital("badJewel");
 
         colorPositionInt = (switchColor == RelicRecoveryEnums.AutoColor.RED) ? (switchPosition == RelicRecoveryEnums.StartingPosition.FRONT) ? 0 : 2 : (switchPosition == RelicRecoveryEnums.StartingPosition.FRONT) ? 1 : 3;
     }

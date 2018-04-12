@@ -4,6 +4,10 @@ import com.kauailabs.navx.ftc.navXPIDController;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+
 
 /**
  * Created by Brandon on 1/8/2018.
@@ -14,14 +18,12 @@ public class WorldTele extends WorldConfig {
 
     //        boolean bClicked = false;
     double collectorSpeed = 0;
-    double PIDrotationOut = 0;
-    boolean PIDON = false;
     boolean autoLiftOn = false;
     ElapsedTime collectorRPMTimer = new ElapsedTime();
     ElapsedTime collectorRPM = new ElapsedTime();
-    double prervPos = motorCollectLeft.getEncoderPosition();
-    double prervTime = collectorRPMTimer.milliseconds();
-    double liftTarget = 0;
+   // double prervPos = motorCollectLeft.getEncoderPosition();
+    //double prervTime = collectorRPMTimer.milliseconds();
+    //double liftTarget = 0;
 
     @Override
     public void init() {
@@ -30,13 +32,6 @@ public class WorldTele extends WorldConfig {
 
     @Override
     public void init_loop(){
-        telemetry.addData("PID", "CALIBRATING");
-        calibration_complete = !navx_device.isCalibrating();
-        if (!calibration_complete) {
-        } else {
-            navx_device.zeroYaw();
-            yawPIDResult = new navXPIDController.PIDResult();
-        }
     }
 
     @Override
@@ -48,29 +43,11 @@ public class WorldTele extends WorldConfig {
 //            telemetry.addData("Encoder Val Left", motorCollectLeft.getEncoderPosition());Ad
 //            telemetry.addData("Collector RPM", RPM);
         //PID
-        if (PIDON&&gamepad1.right_stick_x == 0) {
-            if (yawPIDController.isNewUpdateAvailable(yawPIDResult)) {
-                if (yawPIDResult.isOnTarget()) {
-                    PIDrotationOut = 0.0;
-                } else {
-                    PIDrotationOut = yawPIDResult.getOutput();
-                }
-            }
-        } else {
-            yawPIDController.setSetpoint(navx_device.getYaw());
-            PIDrotationOut = 0;
-        }
-        if (gamepad1.right_bumper) {
-            PIDON = false;
-        }
-        if (gamepad1.left_bumper) {
-            PIDON = true;
-        }
-        if (!PIDON) {
-            PIDrotationOut = 0;
-        }
+        angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        double gyro = angles.firstAngle;
 
-        robotHandler.drive.mecanum.updateMecanum(gamepad1, (gamepad1.right_bumper) ? 0.7 : 1.0, PIDrotationOut);
+        robotHandler.drive.mecanum.updateMecanumThirdPerson(gamepad1, (gamepad1.right_bumper) ? .7: 1.0, Math.toRadians(gyro));
+        //robotHandler.drive.mecanum.updateMecanum(gamepad1, (gamepad1.right_bumper) ? 0.7 : 1.0, 0);
         collectorSpeed = (gamepad1.right_trigger > 0.10) ? gamepad1.right_trigger : (gamepad1.left_trigger > 0.10) ? -gamepad1.left_trigger : 0;
         motorCollectRight.setPower(collectorSpeed);
         motorCollectLeft.setPower(-collectorSpeed);
@@ -122,22 +99,22 @@ public class WorldTele extends WorldConfig {
             servoJewel.setPosition(WorldConstants.auto.jewel.JEWELUP);
         }
 
-        if (gamepad2.dpad_right) {
-            liftTarget = 2800;
-        }
-        if (gamepad1.dpad_left) {
-            liftTarget = 0;
-        }
-        if (autoLiftOn) {
-            if (liftTarget > Math.abs(motorLift.getEncoderPosition())) {
-                motorLift.setPower(-1);
-            } else if (liftTarget < Math.abs(motorLift.getEncoderPosition())) {
-                motorLift.setPower(1);
-
-            }
-        } else {
+//        if (gamepad2.dpad_right) {
+//            liftTarget = 2800;
+//        }
+//        if (gamepad1.dpad_left) {
+//            liftTarget = 0;
+//        }
+//        if (autoLiftOn) {
+//            if (liftTarget > Math.abs(motorLift.getEncoderPosition())) {
+//                motorLift.setPower(-1);
+//            } else if (liftTarget < Math.abs(motorLift.getEncoderPosition())) {
+//                motorLift.setPower(1);
+//
+//            }
+//        } else {
             motorLift.setPower((gamepad2.dpad_up) ? -1 : (gamepad2.dpad_down) ? 1 : 0);
-        }
+//        }
         if (gamepad2.a&&gamepad2.b){
             servoGlyphStop.setPosition(WorldConstants.flip.stopUp);
         } else{
@@ -145,8 +122,7 @@ public class WorldTele extends WorldConfig {
         }
 
         servoRelicTurn.setPosition(gamepad2.right_stick_y*0.000001+servoRelicTurn.servoObject.getPosition());
-        telemetry.addData("PID", PIDON);
-        telemetry.addData("Gyro", navx_device.getYaw());
+        telemetry.addData("Gyro", 0);
         telemetry.addData("Lift", motorLift.getEncoderPosition());
         telemetry.update();
 //            if (collectorRPM.milliseconds() > 500) {

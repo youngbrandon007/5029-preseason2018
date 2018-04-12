@@ -140,9 +140,9 @@ public class WorldConstants {
                             {22 , 18, 16},
                             {0,0,0}
                     };
-            public static final double[][] AlignDivingOffPlatformEncoderTillTurn =
+            public static final double[][]AlignDivingOffPlatformEncoderTillTurn =
                     {
-                            {14, 10, 8}
+                            {10, 10, 10}
                     };
             public static final double[] AlignDriveOffPlatformDirection =
                     {270, 90};

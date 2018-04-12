@@ -17,6 +17,9 @@ import com.vuforia.Vuforia;
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.RelicRecoveryVuMark;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
@@ -126,7 +129,6 @@ public class WorldAuto extends WorldConfig {
         telemetry.addLine();
         displaySwitchBorad((startGlyph == GREY) ? true : false);
         telemetry.addLine();
-        telemetry.addLine(FontFormating.getMark(calibration_complete) + "GYRO CALIBRATION");
         telemetry.addLine(FontFormating.getMark(vuforiaInitialized) + "VUFORIA");
         telemetry.addLine(FontFormating.getMark(imageVisible) + "IMAGE VISIBLE-" + keyColumn);
         telemetry.addLine(FontFormating.getMark(jewelScanned) + "JEWELS-" + jewelState);
@@ -142,13 +144,8 @@ public class WorldAuto extends WorldConfig {
                 init = InitEnum.GYRO;
                 break;
             case GYRO:
-                calibration_complete = !navx_device.isCalibrating();
-                if (!calibration_complete) {
-                } else {
-                    navx_device.zeroYaw();
-                    yawPIDResult = new navXPIDController.PIDResult();
-                    init = InitEnum.VUFORIA;
-                }
+                init = InitEnum.VUFORIA;
+
                 break;
             case VUFORIA:
                 int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
@@ -177,7 +174,6 @@ public class WorldAuto extends WorldConfig {
                 } else {
                     imageVisible = false;
                 }
-                telemetry.addData("Gyro", navx_device.getYaw());
                 break;
         }
 
@@ -193,44 +189,48 @@ public class WorldAuto extends WorldConfig {
         collectorRPMTimer.reset();
         prervTime = collectorRPMTimer.milliseconds();
         prervPos = motorCollectLeft.getEncoderPosition();
+
+
     }
 
     @Override
     public void loop() {
         //Always On Telemetry
         telemetry.addData("AUTO: ", auto);
-        double encoderDif = motorCollectLeft.getEncoderPosition() - prervPos;
-        double timeDif = collectorRPMTimer.milliseconds() - prervTime;
-        double RPM = Math.abs((60000 / timeDif) * encoderDif);
-        telemetry.addData("Collector RPM", RPM);
+//        double encoderDif = motorCollectLeft.getEncoderPosition() - prervPos;
+//        double timeDif = collectorRPMTimer.milliseconds() - prervTime;
+//        double RPM = Math.abs((60000 / timeDif) * encoderDif);
+//        telemetry.addData("Collector RPM", RPM);
+        angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        double gyro = angles.firstAngle;
+
         if (switchPID) {
-            if (yawPIDController.isNewUpdateAvailable(yawPIDResult)) {
-                if (yawPIDResult.isOnTarget()) {
-                    PIDonTarget = true;
-                    PIDrotationOut = 0.0;
-                } else {
-                    PIDrotationOut = yawPIDResult.getOutput();
-                    PIDonTarget = false;
-                }
-            }
+            PIDrotationOut = PID.getOutput(gyro, setpoint);//gyro
+
         } else {
-            double gyroOffset = navx_device.getYaw() - TARGETANGLE;
+            double gyroOffset = gyro - TARGETANGLE;
             while (gyroOffset > 180 || gyroOffset < -180) {
                 gyroOffset += (gyroOffset > 180) ? -360 : (gyroOffset < -180) ? 360 : 0;
             }
 
-            if (gyroOffset > 2) {
-                PIDrotationOut = -.2;
+            if (gyroOffset > 10) {
+                PIDrotationOut = -.6;
                 PIDonTarget = false;
-            } else if (gyroOffset < -2) {
-                PIDrotationOut = .2;
+            } else if (gyroOffset < -10) {
+                PIDrotationOut = .6;
                 PIDonTarget = false;
+            }else if (gyroOffset > 3) {
+                PIDrotationOut = -.5;
+                    PIDonTarget = false;
+            } else if (gyroOffset < -3) {
+                    PIDrotationOut = .5;
+                    PIDonTarget = false;
             } else {
                 PIDrotationOut = 0;
                 PIDonTarget = true;
             }
         }
-        telemetry.addLine("GYRO→TARGET: " + navx_device.getYaw() + "→" + TARGETANGLE);
+        telemetry.addLine("GYRO→TARGET: " + gyro + "→" + TARGETANGLE);//gyro
 
         switch (auto) {
             case WAIT:
@@ -290,20 +290,24 @@ public class WorldAuto extends WorldConfig {
             case ALIGNDRIVEOFFPLATFORM:
 
                 //robotHandler.drive.mecanum.setMecanum(Math.toRadians(WorldConstants.auto.aligning.AlignDriveOffPlatformDirection[colorPositionInt]), 0.5, PIDrotationOut, 1.0);
-                robotHandler.drive.mecanum.setMecanumThridPerson(WorldConstants.auto.aligning.AlignDriveOffPlatformDirection[colorPositionInt], 1.0, PIDrotationOut, 1.0, navx_device.getYaw());
                 if(traveledEncoderTicks(WorldConstants.drive.countsPerInches(WorldConstants.auto.aligning.AlignDivingOffPlatformEncoderTillTurn[colorPositionInt][columnNumber]))) {
                     TARGETANGLE = WorldConstants.auto.aligning.AlignTurnAngle[colorPositionInt];
-                    yawPIDController.setSetpoint(TARGETANGLE);
+                    //yawPIDController.setSetpoint(TARGETANGLE);//gyro
                     servoAlignRight.setPosition(WorldConstants.auto.aligning.AlignArmPosition[colorPositionInt][0][columnNumber]);
                     servoAlignLeft.setPosition(WorldConstants.auto.aligning.AlignArmPosition[colorPositionInt][1][columnNumber]);
                     usingRightArm = WorldConstants.auto.aligning.AlignSwitchClicked[colorPositionInt][0][columnNumber];
                 }
                 //may add PIDontarget
-                if (traveledEncoderTicks(WorldConstants.drive.countsPerInches(WorldConstants.auto.aligning.AlignDrivingOffPlatformEncoder[colorPositionInt][columnNumber]))) {
+                boolean encoderFinished = traveledEncoderTicks(WorldConstants.drive.countsPerInches(WorldConstants.auto.aligning.AlignDrivingOffPlatformEncoder[colorPositionInt][columnNumber]));
+                double speed = (encoderFinished) ? 0: 1.0;
+                robotHandler.drive.mecanum.setMecanumThridPerson(Math.toRadians(WorldConstants.auto.aligning.AlignDriveOffPlatformDirection[colorPositionInt]), speed, PIDrotationOut, 1.0, Math.toRadians(gyro));//gyro
+                if(PIDonTarget && encoderFinished){
                     robotHandler.drive.stop();
                     auto = AutoEnum.ALIGNDRIVEINTOCRYPTO;
                     wait.reset();
                 }
+
+
                 break;
             case ALIGNDRIVEINTOCRYPTO:
 //                    switchPID = false;
