@@ -30,7 +30,10 @@ public class WorldPIDTuning extends WorldConfig {
         PIDrotationOut = -PID.getOutput(gyro, -90);//gyro
         telemetry.addData("Output", PIDrotationOut);
         telemetry.addData("Angle", gyro);
-        robotHandler.drive.tank.setPower(PIDrotationOut, PIDrotationOut);
+        robotHandler.drive.mecanum.setMecanumThridPerson(Math.toRadians(WorldConstants.auto.aligning.AlignDriveOffPlatformDirection[colorPositionInt]), 1, PIDrotationOut, 1, Math.toRadians(gyro));
+
+
+//        robotHandler.drive.tank.setPower(PIDrotationOut, PIDrotationOut);
         telemetry.update();
     }
 

@@ -20,6 +20,7 @@ import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.RelicRecoveryVuMark;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
@@ -423,8 +424,9 @@ public class WorldAuto extends WorldConfig {
                     auto = AutoEnum.COLLECTFINISHCOLLECTING;
                     wait.reset();
                     topGlyph = getGlyph();
-                } else if ((oneGlyphCollected == 1 && wait.milliseconds() > WorldConstants.auto.aligning.collectDriveIntoPitTime) || opticalGlyph.getLightDetected() > 0.0) {
+                } else if (glyphDist.getDistance(DistanceUnit.CM)<25) {
                     robotHandler.drive.stop();
+
                     auto = AutoEnum.COLLECTFINISHCOLLECTING;
                     wait.reset();
                     topGlyph = getGlyph();
