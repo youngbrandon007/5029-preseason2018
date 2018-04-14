@@ -4,6 +4,10 @@ package org.firstinspires.ftc.teamcode.RelicRecoveryWorlds;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.hardware.AnalogInput;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+
 import java.text.DecimalFormat;
 
 /**
@@ -11,14 +15,23 @@ import java.text.DecimalFormat;
  */
 @Autonomous(name = "PIDTUNE")
 public class WorldPIDTuning extends WorldConfig {
+    double PIDrotationOut = 0;
+
     @Override
     public void init() {
-
+        config(this);
     }
 
     @Override
     public void loop() {
+        angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        double gyro = angles.firstAngle;
 
+        PIDrotationOut = -PID.getOutput(gyro, -90);//gyro
+        telemetry.addData("Output", PIDrotationOut);
+        telemetry.addData("Angle", gyro);
+        robotHandler.drive.tank.setPower(PIDrotationOut, PIDrotationOut);
+        telemetry.update();
     }
 
 //

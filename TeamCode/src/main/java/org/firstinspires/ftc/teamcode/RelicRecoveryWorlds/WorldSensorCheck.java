@@ -15,7 +15,7 @@ public class WorldSensorCheck extends WorldConfig {
     @Override
     public void init() {
         config(this);
-        glyphColor.enableLed(true);
+//        glyphColor.enableLed(true);
     }
 
     @Override

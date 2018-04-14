@@ -17,9 +17,9 @@ import static org.firstinspires.ftc.teamcode.RelicRecoveryWorlds.WorldConstants.
 
 public class WorldConstants {
     public static class PID {
-        public static final double P = 0.025;
-        public static final double I = .0002;
-        public static final double D = 0.055;
+        public static final double P = 0.05;
+        public static final double I = 0.001;
+        public static final double D = 0.135;
     }
     public static class alignment {
         public static final double ALIGNLEFTINIT = 0.78;
@@ -137,7 +137,7 @@ public class WorldConstants {
                     };
             public static final double[][] AlignDrivingOffPlatformEncoder =
                     {
-                            {22 , 18, 16},
+                            {26 , 23, 18},
                             {0,0,0}
                     };
             public static final double[][]AlignDivingOffPlatformEncoderTillTurn =

@@ -132,7 +132,7 @@ public class WorldAuto extends WorldConfig {
         telemetry.addLine(FontFormating.getMark(vuforiaInitialized) + "VUFORIA");
         telemetry.addLine(FontFormating.getMark(imageVisible) + "IMAGE VISIBLE-" + keyColumn);
         telemetry.addLine(FontFormating.getMark(jewelScanned) + "JEWELS-" + jewelState);
-        telemetry.addData("Glyph", getGlyph());
+//        telemetry.addData("Glyph", getGlyph());
 
         switch (init) {
             case HARDWAREINIT:
@@ -140,7 +140,7 @@ public class WorldAuto extends WorldConfig {
                 servoFlipR.setPosition(WorldConstants.flip.rightFlat);
                 servoFlipL.setPosition(WorldConstants.flip.leftDown);
                 servoFlipR.setPosition(WorldConstants.flip.rightDown);
-                glyphColor.enableLed(true);
+//                glyphColor.enableLed(true);
                 init = InitEnum.GYRO;
                 break;
             case GYRO:
@@ -204,32 +204,38 @@ public class WorldAuto extends WorldConfig {
         angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
         double gyro = angles.firstAngle;
 
-        if (switchPID) {
-            PIDrotationOut = PID.getOutput(gyro, setpoint);//gyro
+//        if (switchPID) {
 
-        } else {
-            double gyroOffset = gyro - TARGETANGLE;
-            while (gyroOffset > 180 || gyroOffset < -180) {
-                gyroOffset += (gyroOffset > 180) ? -360 : (gyroOffset < -180) ? 360 : 0;
-            }
-
-            if (gyroOffset > 10) {
-                PIDrotationOut = -.6;
-                PIDonTarget = false;
-            } else if (gyroOffset < -10) {
-                PIDrotationOut = .6;
-                PIDonTarget = false;
-            }else if (gyroOffset > 3) {
-                PIDrotationOut = -.5;
-                    PIDonTarget = false;
-            } else if (gyroOffset < -3) {
-                    PIDrotationOut = .5;
-                    PIDonTarget = false;
-            } else {
-                PIDrotationOut = 0;
+            PIDrotationOut = -PID.getOutput(gyro, TARGETANGLE);//gyro
+            if (Math.abs(PIDrotationOut)<0.04){
                 PIDonTarget = true;
             }
-        }
+            else {
+                PIDonTarget = false;
+            }
+//        } else {
+//            double gyroOffset = gyro - TARGETANGLE;
+//            while (gyroOffset > 180 || gyroOffset < -180) {
+//                gyroOffset += (gyroOffset > 180) ? -360 : (gyroOffset < -180) ? 360 : 0;
+//            }
+//
+//            if (gyroOffset > 10) {
+//                PIDrotationOut = -.6;
+//                PIDonTarget = false;
+//            } else if (gyroOffset < -10) {
+//                PIDrotationOut = .6;
+//                PIDonTarget = false;
+//            }else if (gyroOffset > 3) {
+//                PIDrotationOut = -.5;
+//                    PIDonTarget = false;
+//            } else if (gyroOffset < -3) {
+//                    PIDrotationOut = .5;
+//                    PIDonTarget = false;
+//            } else {
+//                PIDrotationOut = 0;
+//                PIDonTarget = true;
+//            }
+//        }
         telemetry.addLine("GYRO→TARGET: " + gyro + "→" + TARGETANGLE);//gyro
 
         switch (auto) {
@@ -281,7 +287,9 @@ public class WorldAuto extends WorldConfig {
             case KEYCOLUMNSET:
                 if (keyColumn != RelicRecoveryVuMark.UNKNOWN) {
                     targetColumn = keyColumn;
+
                 }
+
                 columnNumber = columnNumber(targetColumn);
                 auto = AutoEnum.ALIGNDRIVEOFFPLATFORM;
                 resetEncoders();
@@ -291,8 +299,10 @@ public class WorldAuto extends WorldConfig {
 
                 //robotHandler.drive.mecanum.setMecanum(Math.toRadians(WorldConstants.auto.aligning.AlignDriveOffPlatformDirection[colorPositionInt]), 0.5, PIDrotationOut, 1.0);
                 if(traveledEncoderTicks(WorldConstants.drive.countsPerInches(WorldConstants.auto.aligning.AlignDivingOffPlatformEncoderTillTurn[colorPositionInt][columnNumber]))) {
-                    TARGETANGLE = WorldConstants.auto.aligning.AlignTurnAngle[colorPositionInt];
-                    //yawPIDController.setSetpoint(TARGETANGLE);//gyro
+                    TARGETANGLE = -90;
+                    if (firstReset){
+                    firstReset =false;
+                    }
                     servoAlignRight.setPosition(WorldConstants.auto.aligning.AlignArmPosition[colorPositionInt][0][columnNumber]);
                     servoAlignLeft.setPosition(WorldConstants.auto.aligning.AlignArmPosition[colorPositionInt][1][columnNumber]);
                     usingRightArm = WorldConstants.auto.aligning.AlignSwitchClicked[colorPositionInt][0][columnNumber];
@@ -305,13 +315,14 @@ public class WorldAuto extends WorldConfig {
                     robotHandler.drive.stop();
                     auto = AutoEnum.ALIGNDRIVEINTOCRYPTO;
                     wait.reset();
+                    PID.reset();
                 }
 
 
                 break;
             case ALIGNDRIVEINTOCRYPTO:
 //                    switchPID = false;
-                PIDrotationOut = 0;
+
                 robotHandler.drive.mecanum.setMecanum(Math.toRadians(270), .5, PIDrotationOut, 1.0);
                 if ((limitRightBack.getState() && usingRightArm) || (limitLeftBack.getState() && !usingRightArm) || wait.milliseconds() > 3000) {
                     robotHandler.drive.stop();
@@ -326,7 +337,7 @@ public class WorldAuto extends WorldConfig {
                 wait.reset();
                 break;
             case GLYPHSTRAFFTOALIGN:
-                switchPID = false;
+                switchPID = true;
                 robotHandler.drive.mecanum.setMecanum(Math.toRadians((usingRightArm) ? 180 : 0), .7, PIDrotationOut, 1.0);
                 if ((limitRightSide.getState() && usingRightArm) || (limitLeftSide.getState() && !usingRightArm) || wait.milliseconds() > 3000) {
                     robotHandler.drive.stop();
@@ -346,7 +357,7 @@ public class WorldAuto extends WorldConfig {
                 servoFlipR.setPosition(WorldConstants.flip.rightUp);
                 servoAlignLeft.setPosition(WorldConstants.alignment.ALIGNLEFTUP);
                 servoAlignRight.setPosition(WorldConstants.alignment.ALIGNRIGHTUP);
-                if (wait.milliseconds() > 700) {
+                if (wait.milliseconds() > 500) {
                     //addGlyphsToColumn(COLUMN, FIRST GLYPH COLOR, SECOND GLYPH COLOR);
                     addGlyphsToColumn(targetColumn, botGlyph, topGlyph);
 
@@ -390,6 +401,7 @@ public class WorldAuto extends WorldConfig {
                     servoFlipL.setPosition(WorldConstants.flip.leftDown);
                     servoFlipR.setPosition(WorldConstants.flip.rightDown);
                     oneGlyphCollected = 0;
+                    stop();
                 }
                 break;
             case COLLECTGLYPHS:
@@ -416,11 +428,11 @@ public class WorldAuto extends WorldConfig {
                     auto = AutoEnum.COLLECTFINISHCOLLECTING;
                     wait.reset();
                     topGlyph = getGlyph();
-                } else if((glyphColor.red() + glyphColor.green() + glyphColor.blue())/3.0 > 0){
-                    if(oneGlyphCollected == 0) {
-                        wait.reset();
-                        oneGlyphCollected = 1;
-                    }
+//                } else if((glyphColor.red() + glyphColor.green() + glyphColor.blue())/3.0 > 0){
+//                    if(oneGlyphCollected == 0) {
+//                        wait.reset();
+//                        oneGlyphCollected = 1;
+//                    }
                 }else {
 
                     robotHandler.drive.mecanum.setMecanum(Math.toRadians(90), 0.4, PIDrotationOut, 1.0);
@@ -888,17 +900,18 @@ public class WorldAuto extends WorldConfig {
     //COLLECT FUNCTIONS HERE
 
     public glyph getGlyph() {
-        double average = (glyphColor.red() + glyphColor.green() + glyphColor.blue()) / 3.0;
-        double averageWithoutRed = (glyphColor.green() + glyphColor.blue()) / 2.0;
-        if (average > 0) {
-            if (averageWithoutRed <= 3.5) {
-                return BROWN;
-            } else {
-                return GREY;
-            }
-        } else {
-            return NONE;
-        }
+//        double average = (glyphColor.red() + glyphColor.green() + glyphColor.blue()) / 3.0;
+//        double averageWithoutRed = (glyphColor.green() + glyphColor.blue()) / 2.0;
+//        if (average > 0) {
+//            if (averageWithoutRed <= 3.5) {
+//                return BROWN;
+//            } else {
+//                return GREY;
+//            }
+//        } else {
+//            return NONE;
+//        }
+        return GREY;
     }
 
     //GENERAL FUNCTIONS HERE

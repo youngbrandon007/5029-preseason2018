@@ -67,15 +67,13 @@ public abstract class WorldConfig extends PineappleConfigOpMode {
     public PineappleSensor csJewelLeft;
     public PineappleSensor csJewelRight;
     public OpticalDistanceSensor opticalGlyph;
-    public ColorSensor glyphColor;
+    //    public ColorSensor glyphColor;
     public ColorSensor backGlyphColor;
     public DistanceSensor glyphDist;
 
     //GYRO
 
-    public WorldPID PID = new WorldPID(WorldConstants.PID.P,WorldConstants.PID.I,WorldConstants.PID.D);
-    public double setpoint=0;
-
+    public WorldPID PID = new WorldPID(WorldConstants.PID.P, WorldConstants.PID.I, WorldConstants.PID.D);
 
 
     //SWITCH BOARD
@@ -88,9 +86,9 @@ public abstract class WorldConfig extends PineappleConfigOpMode {
     //Still need detecting
     public boolean switchJewels = false;
     public boolean switchMoreGlyphs = true;
-    public boolean switchPID = false;
+    public boolean switchPID = true;
     public boolean switchHitBadJewel = false;
-
+    public boolean firstReset = true;
     BNO055IMU imu;
 
     // State used for updating telemetry
@@ -133,21 +131,23 @@ public abstract class WorldConfig extends PineappleConfigOpMode {
         limitRightSide = hardwareMap.digitalChannel.get("LRS");
 
         //opticalGlyph = hardwareMap.opticalDistanceSensor.get("OPT");
-        glyphColor = hardwareMap.colorSensor.get("GC");
-        backGlyphColor = hardwareMap.get(ColorSensor.class,"GCD");
-        glyphDist = hardwareMap.get(DistanceSensor.class,"GCD");
+//        glyphColor = hardwareMap.colorSensor.get("GC");
+        backGlyphColor = hardwareMap.get(ColorSensor.class, "GCD");
+        glyphDist = hardwareMap.get(DistanceSensor.class, "GCD");
+
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
-        parameters.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
+        parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
         //parameters.accelUnit           = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
         //parameters.calibrationDataFile = "BNO055IMUCalibration.json"; // see the calibration sample opmode
-        parameters.loggingEnabled      = true;
-        parameters.loggingTag          = "IMU";
+        parameters.loggingEnabled = true;
+        parameters.loggingTag = "IMU";
         //parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
         // Retrieve and initialize the IMU. We expect the IMU to be attached to an I2C port
         // on a Core Device Interface Module, configured to be a sensor of type "AdaFruit IMU",
         // and named "imu".
         imu = hardwareMap.get(BNO055IMU.class, "imu");
         imu.initialize(parameters);
+        PID.setOutputLimits(-1, 1);
     }
 
     public void loadSwitchBoard() {
