@@ -53,7 +53,7 @@ public class WorldTele extends WorldConfig {
             thirdPersonOn = true;
             thirdPersonCal = gyro;
         }else if(gamepad1.left_bumper){
-
+            thirdPersonOn = false;
         }
 
         if(thirdPersonOn) {

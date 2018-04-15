@@ -447,7 +447,7 @@ public class WorldAuto extends WorldConfig {
                     auto = AutoEnum.COLLECTFINISHCOLLECTING;
                     wait.reset();
                     topGlyph = getGlyph();
-                } else if (glyphDist.getDistance(DistanceUnit.CM) < 25 && glyphDist.getDistance(DistanceUnit.CM) > 5) {
+                } else if (motorLift.getEncoderPosition() > -30 && glyphDist.getDistance(DistanceUnit.CM) < 25 && glyphDist.getDistance(DistanceUnit.CM) > 5) {
                     robotHandler.drive.stop();
 
                     auto = AutoEnum.COLLECTFINISHCOLLECTING;//TODO CHANGE BACK
@@ -463,23 +463,26 @@ public class WorldAuto extends WorldConfig {
                         wait.reset();
                         firstReset = false;
                     }
-                    if (wait.milliseconds() > 1000&&wait.milliseconds()<1500) {
-                        robotHandler.drive.mecanum.setMecanum(Math.toRadians(270), 0.5, PIDrotationOut, 1.0);
-                    }
-                    if (wait.milliseconds()>1500){
-                        robotHandler.drive.mecanum.setMecanum(Math.toRadians(270), 0.4, PIDrotationOut, 1.0);
-                        motorCollectRight.setPower(-0.7);
-                        motorCollectLeft.setPower(0.7);
-                        if (wait.milliseconds() > 2000) {
-                            wait.reset();
+                    if (wait.milliseconds() < 500) {
+                        robotHandler.drive.mecanum.setMecanum(Math.toRadians(270), 0.65, PIDrotationOut, 1.0);
+                    } else {
+                        robotHandler.drive.stop();
+//                        robotHandler.drive.mecanum.setMecanum(Math.toRadians(270), 0.4, PIDrotationOut, 1.0);
+
+                        if (wait.milliseconds() % 1500 > 750) {
+                            motorCollectRight.setPower(1.0);
+                            motorCollectLeft.setPower(1.0);
+                        } else {
+                            motorCollectRight.setPower(1.0);
+                            motorCollectLeft.setPower(-1.0);
                         }
                     }
                 } else {
-                    if (wait.milliseconds() > 1500) {
+                    if (wait.milliseconds() > 2000) {
                         robotHandler.drive.mecanum.setMecanum(Math.toRadians(270), 0.4, PIDrotationOut, 1.0);
-                        motorCollectRight.setPower(-0.7);
+                        motorCollectRight.setPower(0.7);
                         motorCollectLeft.setPower(0.7);
-                        if (wait.milliseconds() > 2000) {
+                        if (wait.milliseconds() > 2500) {
                             wait.reset();
                         }
                     } else {
@@ -487,6 +490,7 @@ public class WorldAuto extends WorldConfig {
                         motorCollectRight.setPower(1.0);
                         motorCollectLeft.setPower(-1.0);
                     }
+                    firstReset = true;
                 }
 
 //                    if (wait.milliseconds() > WorldConstants.auto.aligning.collectDriveIntoPitTime || opticalGlyph.getLightDetected() > 0.0){
@@ -501,7 +505,8 @@ public class WorldAuto extends WorldConfig {
                 trackBack = getTraveledEncoderTicks();
                 resetEncoders();
                 auto = AutoEnum.COLLECTRETRACESTEPS;
-
+                servoFlipL.setPosition(WorldConstants.flip.leftFlatAuto);
+                servoFlipR.setPosition(WorldConstants.flip.rightFlatAuto);
 
                 wait.reset();
                 break;
@@ -522,6 +527,7 @@ public class WorldAuto extends WorldConfig {
             case CHANGESETPOINT:
                 previousColumn = targetColumn;
                 targetColumn = getColumn(botGlyph, topGlyph);
+//                targetColumn (previousColumn==RelicRecoveryVuMark.CENTER)
                 columnNumber = columnNumber(targetColumn);
                 int alignment;
                 double previousColumnNumber = columnNumber(previousColumn);
@@ -562,7 +568,7 @@ public class WorldAuto extends WorldConfig {
         }
 
         if (lift == 0) {
-            if (Math.abs(motorLift.getEncoderPosition()) < 30) {
+            if (motorLift.getEncoderPosition() > -30) {
                 motorLift.setPower(0);
             } else {
                 motorLift.setPower(1);

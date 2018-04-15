@@ -47,7 +47,8 @@ public class WorldConstants {
 
         public static final double rightFlat = 0.67;
         public static final double leftFlat = 0.32;
-
+        public static final double rightFlatAuto = 0.59;
+        public static final double leftFlatAuto = 0.4;
         public static final double rightUp = 0.2;
         public static final double leftUp = 0.81;
         public static final double stopUp = 0.5;
