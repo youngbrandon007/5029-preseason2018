@@ -24,6 +24,9 @@ public class WorldTele extends WorldConfig {
    // double prervPos = motorCollectLeft.getEncoderPosition();
     //double prervTime = collectorRPMTimer.milliseconds();
     //double liftTarget = 0;
+    boolean thirdPersonOn = false;
+    double thirdPersonCal = 0.0;
+
 
     @Override
     public void init() {
@@ -46,9 +49,19 @@ public class WorldTele extends WorldConfig {
         angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
         double gyro = angles.firstAngle;
 
-        robotHandler.drive.mecanum.updateMecanumThirdPerson(gamepad1, (gamepad1.right_bumper) ? .7: 1.0, Math.toRadians(gyro));
-        //robotHandler.drive.mecanum.updateMecanum(gamepad1, (gamepad1.right_bumper) ? 0.7 : 1.0, 0);
-        collectorSpeed = (gamepad1.right_trigger > 0.10) ? gamepad1.right_trigger : (gamepad1.left_trigger > 0.10) ? -gamepad1.left_trigger : 0;
+        if(gamepad1.right_bumper){
+            thirdPersonOn = true;
+            thirdPersonCal = gyro;
+        }else if(gamepad1.left_bumper){
+
+        }
+
+        if(thirdPersonOn) {
+            robotHandler.drive.mecanum.updateMecanumThirdPerson(gamepad1, (gamepad1.right_stick_button || gamepad1.left_stick_button) ? .7 : 1.0, Math.toRadians(gyro - thirdPersonCal));
+        }else{
+        robotHandler.drive.mecanum.updateMecanum(gamepad1, (gamepad1.right_bumper) ? 0.7 : 1.0, 0);
+        }
+            collectorSpeed = (gamepad1.right_trigger > 0.10) ? gamepad1.right_trigger : (gamepad1.left_trigger > 0.10) ? -gamepad1.left_trigger : 0;
         motorCollectRight.setPower(collectorSpeed);
         motorCollectLeft.setPower(-collectorSpeed);
         motorRelic.setPower((gamepad2.b)?gamepad2.left_stick_y/3:gamepad2.left_stick_y);

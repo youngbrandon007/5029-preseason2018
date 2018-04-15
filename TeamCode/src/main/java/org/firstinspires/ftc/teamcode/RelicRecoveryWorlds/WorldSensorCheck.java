@@ -16,6 +16,7 @@ public class WorldSensorCheck extends WorldConfig {
     public void init() {
         config(this);
 //        glyphColor.enableLed(true);
+        opticalGlyph.enableLed(true);
     }
 
     @Override
@@ -31,6 +32,8 @@ public class WorldSensorCheck extends WorldConfig {
         telemetry.addData("Red  ", backGlyphColor.red());
         telemetry.addData("Green", backGlyphColor.green());
         telemetry.addData("Blue ", backGlyphColor.blue());
+        telemetry.addData("ODS", opticalGlyph.getLightDetected());
+        telemetry.addData("ODS-RAW", opticalGlyph.getRawLightDetected());
             //telemetry.addData("Glyph Optic", opticalGlyph.getLightDetected());
             //telemetry.addData("color R", glyphColor.red());
             //telemetry.addData("color G", glyphColor.green());

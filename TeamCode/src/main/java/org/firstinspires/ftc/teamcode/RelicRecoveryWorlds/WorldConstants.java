@@ -17,14 +17,14 @@ import static org.firstinspires.ftc.teamcode.RelicRecoveryWorlds.WorldConstants.
 
 public class WorldConstants {
     public static class PID {
-        public static final double P = 0.05;
-        public static final double I = 0.001;
-        public static final double D = 0.135;
+        public static final double P = 0.04;
+        public static final double I = 0.000;//5
+        public static final double D = 0.1;
     }
     public static class alignment {
         public static final double ALIGNLEFTINIT = 0.78;
-        public static final double ALIGNLEFTDOWN = 0.45;
-        public static final double ALIGNLEFTUP = 0.75;
+        public static final double ALIGNLEFTDOWN = 0.53;
+        public static final double ALIGNLEFTUP = 0.7;
         public static final double ALIGNRIGHTINIT = 0.17;
         public static final double ALIGNRIGHTDOWN = 0.83;
         public static final double ALIGNRIGHTUP = 0.2;
@@ -137,17 +137,17 @@ public class WorldConstants {
                     };
             public static final double[][] AlignDrivingOffPlatformEncoder =
                     {
-                            {26 , 23, 18},
+                            {27 , 22, 22},
                             {0,0,0}
                     };
             public static final double[][]AlignDivingOffPlatformEncoderTillTurn =
                     {
-                            {10, 10, 10}
+                            {5, 5, 5}//10
                     };
             public static final double[] AlignDriveOffPlatformDirection =
                     {270, 90};
             public static final double[] AlignTurnAngle =
-                    {90, 90};
+                    {-90, -90};
 
             public static final double CollectDistToPit = 10;
             public static final int collectDriveIntoPitTime = 2000;

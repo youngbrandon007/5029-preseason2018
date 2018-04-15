@@ -70,6 +70,7 @@ public abstract class WorldConfig extends PineappleConfigOpMode {
     //    public ColorSensor glyphColor;
     public ColorSensor backGlyphColor;
     public DistanceSensor glyphDist;
+    public WorldPID PIDT;
 
     //GYRO
 
@@ -130,7 +131,7 @@ public abstract class WorldConfig extends PineappleConfigOpMode {
         limitRightBack = hardwareMap.digitalChannel.get("LRB");
         limitRightSide = hardwareMap.digitalChannel.get("LRS");
 
-        //opticalGlyph = hardwareMap.opticalDistanceSensor.get("OPT");
+        opticalGlyph = hardwareMap.opticalDistanceSensor.get("OPT");
 //        glyphColor = hardwareMap.colorSensor.get("GC");
         backGlyphColor = hardwareMap.get(ColorSensor.class, "GCD");
         glyphDist = hardwareMap.get(DistanceSensor.class, "GCD");
