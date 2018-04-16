@@ -90,8 +90,8 @@ public abstract class WorldConfig extends PineappleConfigOpMode {
     public boolean switchPID = true;
     public boolean switchHitBadJewel = false;
     public boolean firstReset = true;
+    public int numbCol = 0;
     BNO055IMU imu;
-
     // State used for updating telemetry
     Orientation angles;
 

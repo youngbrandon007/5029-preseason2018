@@ -79,7 +79,7 @@ public class WorldAuto extends WorldConfig {
 
     AutoEnum auto = AutoEnum.WAIT;
     InitEnum init = InitEnum.HARDWAREINIT;
-    RelicRecoveryVuMark keyColumn = RelicRecoveryVuMark.UNKNOWN;
+    RelicRecoveryVuMark keyColumn = RelicRecoveryVuMark.RIGHT;
     RelicRecoveryVuMark targetColumn = RelicRecoveryVuMark.RIGHT;//TODO Change Back to Center
     RelicRecoveryVuMark previousColumn = RelicRecoveryVuMark.CENTER;
     int columnNumber = 1;
@@ -392,7 +392,7 @@ public class WorldAuto extends WorldConfig {
                 break;
             case GLYPHINTOBOX:
                 robotHandler.drive.mecanum.setMecanum(Math.toRadians(270), 0.5, PIDrotationOut, 1.0);
-                if (wait.milliseconds() > 300) {
+                if (wait.milliseconds() > 500) {
                     //addGlyphsToColumn(COLUMN, FIRST GLYPH COLOR, SECOND GLYPH COLOR);
                     robotHandler.drive.mecanum.setMecanum(Math.toRadians(90), 1.0, PIDrotationOut, 1.0);
                     auto = AutoEnum.GLYPHPLACERESET;
@@ -525,9 +525,15 @@ public class WorldAuto extends WorldConfig {
                 }
                 break;
             case CHANGESETPOINT:
+
                 previousColumn = targetColumn;
-                targetColumn = getColumn(botGlyph, topGlyph);
-//                targetColumn (previousColumn==RelicRecoveryVuMark.CENTER)
+//                targetColumn = getColumn(botGlyph, topGlyph);
+
+                targetColumn = (previousColumn==keyColumn)?((previousColumn==RelicRecoveryVuMark.LEFT||previousColumn==RelicRecoveryVuMark.RIGHT)?RelicRecoveryVuMark.CENTER:RelicRecoveryVuMark.LEFT):((previousColumn==RelicRecoveryVuMark.LEFT)?(RelicRecoveryVuMark.RIGHT):((previousColumn==RelicRecoveryVuMark.CENTER)?((keyColumn==RelicRecoveryVuMark.LEFT)?RelicRecoveryVuMark.RIGHT:RelicRecoveryVuMark.LEFT):RelicRecoveryVuMark.RIGHT));
+                if (numbCol==2){
+                    targetColumn = previousColumn;
+                }
+                numbCol++;
                 columnNumber = columnNumber(targetColumn);
                 int alignment;
                 double previousColumnNumber = columnNumber(previousColumn);
