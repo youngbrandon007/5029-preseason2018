@@ -152,7 +152,7 @@ public class WorldConstants {
 
             public static final double CollectDistToPit = 10;
             public static final int collectDriveIntoPitTime = 2000;
-            public static final double GlyphDistanceToCrypto = 14;
+            public static final double GlyphDistanceToCrypto = 16;
             public static final double columnStraffDistance = 7;
             public static final double alignStraffDistance = 1.5;//1.5;
         }

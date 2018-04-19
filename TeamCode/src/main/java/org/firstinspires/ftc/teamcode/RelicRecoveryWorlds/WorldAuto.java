@@ -209,7 +209,7 @@ public class WorldAuto extends WorldConfig {
         if (switchPID) {
 
             PIDrotationOut = -PID.getOutput(gyro, TARGETANGLE);//gyro
-            if (Math.abs(TARGETANGLE - gyro) < 4) {
+            if (Math.abs(TARGETANGLE - gyro) < 5) {
                 PIDonTarget = true;
             } else {
                 PIDonTarget = false;
@@ -420,7 +420,8 @@ public class WorldAuto extends WorldConfig {
             case COLLECTSTARTTRACKING:
                 break;
             case COLLECTGOTOPIT:
-                robotHandler.drive.mecanum.setMecanum(Math.toRadians(90), 1.0, PIDrotationOut, 1.0);
+                robotHandler.drive.mecanum.setMecanum(Math.toRadians((numbCol == 2
+                ) ? ((targetColumn == RelicRecoveryVuMark.LEFT)? 65:115):90), 1.0, PIDrotationOut, 1.0);
                 if (traveledEncoderTicks(WorldConstants.drive.countsPerInches(WorldConstants.auto.aligning.CollectDistToPit))) {
                     robotHandler.drive.stop();
                     wait.reset();
@@ -429,6 +430,9 @@ public class WorldAuto extends WorldConfig {
                     servoFlipR.setPosition(WorldConstants.flip.rightDown);
                     oneGlyphCollected = 0;
                     firstReset = true;
+                    if (numbCol==0){
+                        TARGETANGLE+=10;
+                    }
 
                 }
                 break;
@@ -447,7 +451,7 @@ public class WorldAuto extends WorldConfig {
                     auto = AutoEnum.COLLECTFINISHCOLLECTING;
                     wait.reset();
                     topGlyph = getGlyph();
-                } else if (motorLift.getEncoderPosition() > -30 && glyphDist.getDistance(DistanceUnit.CM) < 25 && glyphDist.getDistance(DistanceUnit.CM) > 5) {
+                } else if (motorLift.getEncoderPosition() > -30 && glyphDist.getDistance(DistanceUnit.CM) < 20 && glyphDist.getDistance(DistanceUnit.CM) > 5) {
                     robotHandler.drive.stop();
 
                     auto = AutoEnum.COLLECTFINISHCOLLECTING;//TODO CHANGE BACK
@@ -464,6 +468,7 @@ public class WorldAuto extends WorldConfig {
                         firstReset = false;
                     }
                     if (wait.milliseconds() < 500) {
+                        TARGETANGLE=90;
                         robotHandler.drive.mecanum.setMecanum(Math.toRadians(270), 0.65, PIDrotationOut, 1.0);
                     } else {
                         robotHandler.drive.stop();
@@ -486,6 +491,7 @@ public class WorldAuto extends WorldConfig {
                             wait.reset();
                         }
                     } else {
+
                         robotHandler.drive.mecanum.setMecanum(Math.toRadians(90), 0.5, PIDrotationOut, 1.0);
                         motorCollectRight.setPower(1.0);
                         motorCollectLeft.setPower(-1.0);
@@ -512,20 +518,27 @@ public class WorldAuto extends WorldConfig {
                 break;
             case COLLECTRETRACESTEPS:
 
-                robotHandler.drive.mecanum.setMecanum(Math.toRadians(270), .6, PIDrotationOut, 1.0);
+
                 if (traveledEncoderTicks(trackBack - WorldConstants.drive.countsPerInches(WorldConstants.auto.aligning.GlyphDistanceToCrypto))) {
-                    robotHandler.drive.stop();
+                    robotHandler.drive.mecanum.setMecanum(Math.toRadians(90), .1, PIDrotationOut, 1.0);
                     auto = AutoEnum.CHANGESETPOINT;
                     resetEncoders();
                     botGlyph = getGlyph();
-                    servoFlipL.setPosition(WorldConstants.flip.leftFlat);
-                    servoFlipR.setPosition(WorldConstants.flip.rightFlat);
+                    motorCollectRight.setPower(0);
+                    motorCollectLeft.setPower(0);
+                }else if (traveledEncoderTicks(trackBack - WorldConstants.drive.countsPerInches(WorldConstants.auto.aligning.GlyphDistanceToCrypto + 6))) {
+                    robotHandler.drive.mecanum.setMecanum(Math.toRadians(270), .5, PIDrotationOut, 1.0);
                     motorCollectRight.setPower(-1.0);
                     motorCollectLeft.setPower(1.0);
+                    servoFlipL.setPosition(WorldConstants.flip.leftFlat);
+                    servoFlipR.setPosition(WorldConstants.flip.rightFlat);
+
+                }else{
+                    robotHandler.drive.mecanum.setMecanum(Math.toRadians(270), 1.0, PIDrotationOut, 1.0);
                 }
                 break;
             case CHANGESETPOINT:
-
+                robotHandler.drive.stop();
                 previousColumn = targetColumn;
 //                targetColumn = getColumn(botGlyph, topGlyph);
 
@@ -561,7 +574,7 @@ public class WorldAuto extends WorldConfig {
                     lift = 2;
                 }
 
-                robotHandler.drive.mecanum.setMecanum(Math.toRadians(direction), 0.7, PIDrotationOut, 1.0);
+                robotHandler.drive.mecanum.setMecanum(Math.toRadians(direction), 1.0, PIDrotationOut, 1.0);
                 if (traveledEncoderTicks(WorldConstants.drive.countsPerInches(distance))) {// || wait.milliseconds() > 5000) {
                     robotHandler.drive.stop();
                     wait.reset();
