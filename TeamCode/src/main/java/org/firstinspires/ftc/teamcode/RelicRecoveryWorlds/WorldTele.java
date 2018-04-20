@@ -21,11 +21,14 @@ public class WorldTele extends WorldConfig {
     boolean autoLiftOn = false;
     ElapsedTime collectorRPMTimer = new ElapsedTime();
     ElapsedTime collectorRPM = new ElapsedTime();
-   // double prervPos = motorCollectLeft.getEncoderPosition();
+    // double prervPos = motorCollectLeft.getEncoderPosition();
     //double prervTime = collectorRPMTimer.milliseconds();
     //double liftTarget = 0;
     boolean thirdPersonOn = false;
+    boolean rightArm = false;
+    boolean leftArm = false;
     double thirdPersonCal = 0.0;
+    double speed = 0;
 
 
     @Override
@@ -34,7 +37,7 @@ public class WorldTele extends WorldConfig {
     }
 
     @Override
-    public void init_loop(){
+    public void init_loop() {
     }
 
     @Override
@@ -49,22 +52,58 @@ public class WorldTele extends WorldConfig {
         angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
         double gyro = angles.firstAngle;
 
-        if(gamepad1.right_bumper){
+        if (gamepad1.right_bumper) {
             thirdPersonOn = true;
             thirdPersonCal = gyro;
-        }else if(gamepad1.left_bumper){
+        } else if (gamepad1.left_bumper) {
             thirdPersonOn = false;
         }
-
-        if(thirdPersonOn) {
-            robotHandler.drive.mecanum.updateMecanumThirdPerson(gamepad1, (gamepad1.right_stick_button || gamepad1.left_stick_button) ? .7 : 1.0, Math.toRadians(gyro - thirdPersonCal));
-        }else{
-        robotHandler.drive.mecanum.updateMecanum(gamepad1, (gamepad1.right_bumper) ? 0.7 : 1.0, 0);
+        if (gamepad1.a) {
+            rightArm = false;
+            leftArm = false;
+        } else if (gamepad1.b) {
+            rightArm = true;
+            leftArm = false;
         }
-            collectorSpeed = (gamepad1.right_trigger > 0.10) ? gamepad1.right_trigger : (gamepad1.left_trigger > 0.10) ? -gamepad1.left_trigger : 0;
+        if (gamepad1.x) {
+            rightArm = false;
+            leftArm = false;
+        } else if (gamepad1.y) {
+            rightArm = false;
+            leftArm = true;
+        }
+
+        servoAlignRight.setPosition((rightArm) ? WorldConstants.alignment.ALIGNRIGHTDOWN : WorldConstants.alignment.ALIGNRIGHTUP);
+        servoAlignLeft.setPosition((leftArm) ? WorldConstants.alignment.ALIGNLEFTDOWN : WorldConstants.alignment.ALIGNLEFTUP);
+        if (gamepad1.dpad_down || gamepad1.dpad_left || gamepad1.dpad_right) {
+            if (rightArm&&gamepad1.dpad_down&&limitRightBack.getState()){
+                speed = 0;
+            } else if (rightArm&&gamepad1.dpad_left&&limitRightSide.getState()){
+                speed = 0.0;
+            } else if (leftArm&&gamepad1.dpad_down&&limitLeftBack.getState()){
+                speed = 0;
+            } else if (leftArm&&gamepad1.dpad_right&&limitRightBack.getState()){
+                speed = 0;
+            } else {
+                speed = 0.4;
+            }
+                robotHandler.drive.mecanum.setMecanum(Math.toRadians((gamepad1.dpad_down)?270:((gamepad1.dpad_left)?180:90)),speed,0 , 0);
+            if ((leftArm&&limitLeftSide.getState())||(rightArm&&limitRightSide.getState())){
+                servoFlipL.setPosition(WorldConstants.flip.leftUp);
+                servoFlipR.setPosition(WorldConstants.flip.rightUp);
+            }
+
+        } else {
+            if (thirdPersonOn) {
+                robotHandler.drive.mecanum.updateMecanumThirdPerson(gamepad1, (gamepad1.right_stick_button || gamepad1.left_stick_button) ? .5 : 1.0, Math.toRadians(gyro - thirdPersonCal));
+            } else {
+                robotHandler.drive.mecanum.updateMecanum(gamepad1, (gamepad1.right_stick_button||gamepad1.left_stick_button) ? 0.7 : 1.0, 0);
+            }
+        }
+        collectorSpeed = (gamepad1.right_trigger > 0.10) ? gamepad1.right_trigger : (gamepad1.left_trigger > 0.10) ? -gamepad1.left_trigger : 0;
         motorCollectRight.setPower(collectorSpeed);
         motorCollectLeft.setPower(-collectorSpeed);
-        motorRelic.setPower((gamepad2.b)?gamepad2.left_stick_y/3:gamepad2.left_stick_y);
+        motorRelic.setPower((gamepad2.b) ? gamepad2.left_stick_y / 3 : gamepad2.left_stick_y);
 
         if (gamepad2.right_bumper) {
             servoRelicGrab.setPosition(WorldConstants.relic.grabClose);
@@ -78,16 +117,8 @@ public class WorldTele extends WorldConfig {
         if (gamepad2.left_trigger > 0.2) {
             servoRelicTurn.setPosition(WorldConstants.relic.turnDown);
         }
-        if (gamepad1.y) {
-            servoAlignRight.setPosition(WorldConstants.alignment.ALIGNRIGHTDOWN);
-        } else {
-            servoAlignRight.setPosition(WorldConstants.alignment.ALIGNRIGHTUP);
-        }
-        if (gamepad1.x) {
-            servoAlignLeft.setPosition(WorldConstants.alignment.ALIGNLEFTDOWN);
-        } else {
-            servoAlignLeft.setPosition(WorldConstants.alignment.ALIGNLEFTUP);
-        }
+
+
         if (gamepad2.y) {
             servoFlipL.setPosition(WorldConstants.flip.leftUp);
             servoFlipR.setPosition(WorldConstants.flip.rightUp);
@@ -104,7 +135,7 @@ public class WorldTele extends WorldConfig {
         if (gamepad2.dpad_up || gamepad2.dpad_down) {
             autoLiftOn = false;
         }
-        if (gamepad2.x&&gamepad2.y){
+        if (gamepad2.x && gamepad2.y) {
             servoJewelHit.setPosition(WorldConstants.auto.jewel.JEWELHITCENTER);
             servoJewel.setPosition(WorldConstants.auto.jewel.JEWELDOWN);
         } else {
@@ -126,17 +157,17 @@ public class WorldTele extends WorldConfig {
 //
 //            }
 //        } else {
-            motorLift.setPower((gamepad2.dpad_up) ? -1 : (gamepad2.dpad_down) ? 1 : 0);
+        motorLift.setPower((gamepad2.dpad_up) ? -1 : (gamepad2.dpad_down) ? 1 : 0);
 //        }
-        if (gamepad2.a&&gamepad2.b){
+        if (gamepad2.a && gamepad2.b) {
             servoGlyphStop.setPosition(WorldConstants.flip.stopUp);
-        } else{
+        } else {
             servoGlyphStop.setPosition(WorldConstants.flip.stopDown);
         }
 
-        servoRelicTurn.setPosition(gamepad2.right_stick_y*0.000001+servoRelicTurn.servoObject.getPosition());
-        telemetry.addData("Gyro", 0);
-        telemetry.addData("Lift", motorLift.getEncoderPosition());
+//        servoRelicTurn.setPosition(gamepad2.right_stick_y * 0.000001 + servoRelicTurn.servoObject.getPosition());
+//        telemetry.addData("Gyro", 0);
+//        telemetry.addData("Lift", motorLift.getEncoderPosition());
         telemetry.update();
 //            if (collectorRPM.milliseconds() > 500) {
 //                prervPos = motorCollectLeft.getEncoderPosition();

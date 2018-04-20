@@ -430,9 +430,9 @@ public class WorldAuto extends WorldConfig {
                     servoFlipR.setPosition(WorldConstants.flip.rightDown);
                     oneGlyphCollected = 0;
                     firstReset = true;
-                    if (numbCol==0){
-                        TARGETANGLE+=10;
-                    }
+//                    if (numbCol==0){
+//                        TARGETANGLE+=10;
+//                    }
 
                 }
                 break;
@@ -468,7 +468,7 @@ public class WorldAuto extends WorldConfig {
                         firstReset = false;
                     }
                     if (wait.milliseconds() < 500) {
-                        TARGETANGLE=90;
+//                        TARGETANGLE=90;
                         robotHandler.drive.mecanum.setMecanum(Math.toRadians(270), 0.65, PIDrotationOut, 1.0);
                     } else {
                         robotHandler.drive.stop();
