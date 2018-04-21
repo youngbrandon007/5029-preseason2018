@@ -22,6 +22,10 @@ public class WorldSensorCheck extends WorldConfig {
     @Override
     public void loop() {
         telemetry.addData("LIFT", motorLift.getEncoderPosition());
+        telemetry.addData("DFR", driveFrontRight.getEncoderPosition());
+        telemetry.addData("DFL", driveFrontLeft.getEncoderPosition());
+        telemetry.addData("DBR", driveBackRight.getEncoderPosition());
+        telemetry.addData("DBL", driveBackLeft.getEncoderPosition());
             telemetry.addData("LB", limitLeftBack.getState());
             telemetry.addData("LS", limitLeftSide.getState());
             telemetry.addData("RB", limitRightBack.getState());
@@ -32,8 +36,18 @@ public class WorldSensorCheck extends WorldConfig {
         telemetry.addData("Red  ", backGlyphColor.red());
         telemetry.addData("Green", backGlyphColor.green());
         telemetry.addData("Blue ", backGlyphColor.blue());
+        telemetry.addData("Distance (cm)",
+                String.format(Locale.US, "%.02f", collectDist.getDistance(DistanceUnit.CM)));
+        telemetry.addData("Alpha", collectColor.alpha());
+        telemetry.addData("Red  ", collectColor.red());
+        telemetry.addData("Green", collectColor.green());
+        telemetry.addData("Blue ", collectColor.blue());
         telemetry.addData("ODS", opticalGlyph.getLightDetected());
         telemetry.addData("ODS-RAW", opticalGlyph.getRawLightDetected());
+        telemetry.addData("ODSR", opticalRight.getLightDetected());
+        telemetry.addData("ODSR-RAW", opticalRight.getRawLightDetected());
+        telemetry.addData("ODSL", opticalLeft.getLightDetected());
+        telemetry.addData("ODSL-RAW", opticalLeft.getRawLightDetected());
             //telemetry.addData("Glyph Optic", opticalGlyph.getLightDetected());
             //telemetry.addData("color R", glyphColor.red());
             //telemetry.addData("color G", glyphColor.green());

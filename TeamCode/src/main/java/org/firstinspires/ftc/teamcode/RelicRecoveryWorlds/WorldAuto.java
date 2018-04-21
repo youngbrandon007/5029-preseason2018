@@ -71,7 +71,7 @@ public class WorldAuto extends WorldConfig {
         ALIGN, ALIGNDRIVEOFFPLATFORM, ALIGNTURN, ALIGNDRIVEINTOCRYPTO,
         KEYCOLUMNSET,
         GLYPH, GLYPHSTRAFFTOALIGN, GLYPHPLACE, GLYPHINTOBOX, GLYPHPLACERESET,
-        COLLECT, COLLECTDRIVEBACKFROMCRYPTO, COLLECTSTRAFFTOCENTER, COLLECTSTARTTRACKING, COLLECTGOTOPIT, COLLECTGLYPHS, COLLECTFINISHCOLLECTING, COLLECTRETRACESTEPS, COLLECTPROCESSFORPLACING, CHANGESETPOINT
+        COLLECT, COLLECTDRIVEBACKFROMCRYPTO, COLLECTSTRAFFTOCENTER, COLLECTSTARTTRACKING, COLLECTGOTOPIT, COLLECTGLYPHS, COLLECTFINISHCOLLECTING, COLLECTSIDEGLYPH, COLLECTSIDEGLYPHTRACKBACK, COLLECTSIDEGLYPHTURN, COLLECTRETRACESTEPS, COLLECTPROCESSFORPLACING, CHANGESETPOINT
     }
 
     ElapsedTime wait = new ElapsedTime();
@@ -110,6 +110,7 @@ public class WorldAuto extends WorldConfig {
     double prervPos;
 
     double TARGETANGLE = 0.0;
+    int collectTurnPos = 0;
     double PIDrotationOut = 0;
     boolean PIDonTarget = false;
     int trackBack = 0;
@@ -420,8 +421,8 @@ public class WorldAuto extends WorldConfig {
             case COLLECTSTARTTRACKING:
                 break;
             case COLLECTGOTOPIT:
-                robotHandler.drive.mecanum.setMecanum(Math.toRadians((numbCol == 2
-                ) ? ((targetColumn == RelicRecoveryVuMark.LEFT)? 65:115):90), 1.0, PIDrotationOut, 1.0);
+                double directionT = Math.toRadians((numbCol >= 1) ? ((targetColumn == RelicRecoveryVuMark.LEFT) ? 60 : 120) : 90);
+                robotHandler.drive.mecanum.setMecanum(directionT, 1.0, PIDrotationOut, 1.0);
                 if (traveledEncoderTicks(WorldConstants.drive.countsPerInches(WorldConstants.auto.aligning.CollectDistToPit))) {
                     robotHandler.drive.stop();
                     wait.reset();
@@ -454,7 +455,7 @@ public class WorldAuto extends WorldConfig {
                 } else if (motorLift.getEncoderPosition() > -30 && glyphDist.getDistance(DistanceUnit.CM) < 20 && glyphDist.getDistance(DistanceUnit.CM) > 5) {
                     robotHandler.drive.stop();
 
-                    auto = AutoEnum.COLLECTFINISHCOLLECTING;//TODO CHANGE BACK
+                    auto = AutoEnum.COLLECTFINISHCOLLECTING;
                     wait.reset();
                     topGlyph = getGlyph();
 //                } else if((glyphColor.red() + glyphColor.green() + glyphColor.blue())/3.0 > 0){
@@ -483,6 +484,16 @@ public class WorldAuto extends WorldConfig {
                         }
                     }
                 } else {
+//                    if (wait.milliseconds() % 1500 > 750) {
+//                        robotHandler.drive.mecanum.setMecanum(Math.toRadians(270), 0.8, PIDrotationOut, 1.0);
+//                        motorCollectRight.setPower(0.7);
+//                        motorCollectLeft.setPower(0.7);
+//                    } else {
+//                        robotHandler.drive.mecanum.setMecanum(Math.toRadians(90), 0.6, PIDrotationOut, 1.0);
+//
+//                        motorCollectRight.setPower(1.0);
+//                        motorCollectLeft.setPower(-1.0);
+//                    }
                     if (wait.milliseconds() > 2000) {
                         robotHandler.drive.mecanum.setMecanum(Math.toRadians(270), 0.4, PIDrotationOut, 1.0);
                         motorCollectRight.setPower(0.7);
@@ -490,14 +501,35 @@ public class WorldAuto extends WorldConfig {
                         if (wait.milliseconds() > 2500) {
                             wait.reset();
                         }
-                    } else {
-
+                    }else {
                         robotHandler.drive.mecanum.setMecanum(Math.toRadians(90), 0.5, PIDrotationOut, 1.0);
-                        motorCollectRight.setPower(1.0);
-                        motorCollectLeft.setPower(-1.0);
+                        motorCollectRight.setPower(-1);
+                        motorCollectRight.setPower(1);
                     }
                     firstReset = true;
+
+//                    if (opticalRight.getLightDetected() > 0.23 && opticalLeft.getLightDetected() > 0.23) {
+//                        if (otherfirstReset) {
+//                            wait.reset();
+//                            otherfirstReset = false;
+//                        }
+//                        if (wait.milliseconds() < 2000 && collectDist.getDistance(DistanceUnit.CM) < 30) {
+//                            robotHandler.drive.mecanum.setMecanum(Math.toRadians(90), 0.8, PIDrotationOut, 1.0);
+//                        } else {
+//                            auto = AutoEnum.COLLECTSIDEGLYPH;
+//                            wait.reset();
+//                            collectTurnPos = getTraveledEncoderTicks();
+//                            TARGETANGLE = 60;
+//                        }
                 }
+//                    } else {
+//
+//                        motorCollectRight.setPower(1.0);
+//                        motorCollectLeft.setPower(-1.0);
+//                        robotHandler.drive.mecanum.setMecanum(Math.toRadians(90), 0.5, PIDrotationOut, 1.0);
+//                    }
+
+
 
 //                    if (wait.milliseconds() > WorldConstants.auto.aligning.collectDriveIntoPitTime || opticalGlyph.getLightDetected() > 0.0){
 //                        robotHandler.drive.stop();
@@ -507,17 +539,85 @@ public class WorldAuto extends WorldConfig {
 //                    }
 
                 break;
+            case COLLECTSIDEGLYPH:
+                if (wait.milliseconds() < 800) {
+                    robotHandler.drive.mecanum.setMecanumThridPerson(Math.toRadians(270), 1, PIDrotationOut, 1.0, gyro);
+                } else {
+                    robotHandler.drive.mecanum.setMecanum(Math.toRadians(90), 1, PIDrotationOut, 1.0);
+                    if (traveledEncoderTicks(WorldConstants.drive.countsPerInches(60))) {
+                        robotHandler.drive.stop();
+                        auto = AutoEnum.COLLECTFINISHCOLLECTING;
+                        wait.reset();
+                        topGlyph = getGlyph();
+                    } else if (motorLift.getEncoderPosition() > -30 && glyphDist.getDistance(DistanceUnit.CM) < 20 && glyphDist.getDistance(DistanceUnit.CM) > 5) {
+                        robotHandler.drive.stop();
+
+                        auto = AutoEnum.COLLECTFINISHCOLLECTING;
+                        wait.reset();
+                        topGlyph = getGlyph();
+//                } else if((glyphColor.red() + glyphColor.green() + glyphColor.blue())/3.0 > 0){
+//                    if(oneGlyphCollected == 0) {
+//                        wait.reset();
+//                        oneGlyphCollected = 1;
+//                    }
+                    } else if (opticalGlyph.getLightDetected() > .23) {
+                        if (firstReset) {
+                            wait.reset();
+                            firstReset = false;
+                        }
+                        if (wait.milliseconds() < 500) {
+//                        TARGETANGLE=90;
+                            robotHandler.drive.mecanum.setMecanum(Math.toRadians(270), 0.65, PIDrotationOut, 1.0);
+                        } else {
+                            robotHandler.drive.stop();
+//                        robotHandler.drive.mecanum.setMecanum(Math.toRadians(270), 0.4, PIDrotationOut, 1.0);
+
+                            if (wait.milliseconds() % 1500 > 750) {
+                                motorCollectRight.setPower(1.0);
+                                motorCollectLeft.setPower(1.0);
+                            } else {
+                                motorCollectRight.setPower(1.0);
+                                motorCollectLeft.setPower(-1.0);
+                            }
+                        }
+                    }
+
+                }
+
+                break;
             case COLLECTFINISHCOLLECTING:
                 trackBack = getTraveledEncoderTicks();
                 resetEncoders();
-                auto = AutoEnum.COLLECTRETRACESTEPS;
+                if (collectTurnPos != 0) {
+                    auto = AutoEnum.COLLECTSIDEGLYPHTRACKBACK;
+
+                } else {
+                    auto = AutoEnum.COLLECTRETRACESTEPS;
+                }
                 servoFlipL.setPosition(WorldConstants.flip.leftFlatAuto);
                 servoFlipR.setPosition(WorldConstants.flip.rightFlatAuto);
 
                 wait.reset();
                 break;
+            case COLLECTSIDEGLYPHTRACKBACK:
+                if (traveledEncoderTicks(trackBack - collectTurnPos)) {
+                    auto = AutoEnum.CHANGESETPOINT;
+                    resetEncoders();
+                    botGlyph = getGlyph();
+                    motorCollectRight.setPower(0);
+                    motorCollectLeft.setPower(0);
+                    TARGETANGLE = 90;
+                } else {
+                    robotHandler.drive.mecanum.setMecanum(Math.toRadians(270), 1.0, PIDrotationOut, 1.0);
+                }
+                break;
+            case COLLECTSIDEGLYPHTURN:
+                robotHandler.drive.mecanum.setMecanum(0.0, 0.0, PIDrotationOut, 1.0);
+                if (PIDonTarget) {
+                    auto = AutoEnum.COLLECTRETRACESTEPS;
+                }
+                break;
             case COLLECTRETRACESTEPS:
-
 
                 if (traveledEncoderTicks(trackBack - WorldConstants.drive.countsPerInches(WorldConstants.auto.aligning.GlyphDistanceToCrypto))) {
                     robotHandler.drive.mecanum.setMecanum(Math.toRadians(90), .1, PIDrotationOut, 1.0);
@@ -526,14 +626,14 @@ public class WorldAuto extends WorldConfig {
                     botGlyph = getGlyph();
                     motorCollectRight.setPower(0);
                     motorCollectLeft.setPower(0);
-                }else if (traveledEncoderTicks(trackBack - WorldConstants.drive.countsPerInches(WorldConstants.auto.aligning.GlyphDistanceToCrypto + 6))) {
+                } else if (traveledEncoderTicks(trackBack - WorldConstants.drive.countsPerInches(WorldConstants.auto.aligning.GlyphDistanceToCrypto + 6))) {
                     robotHandler.drive.mecanum.setMecanum(Math.toRadians(270), .5, PIDrotationOut, 1.0);
                     motorCollectRight.setPower(-1.0);
                     motorCollectLeft.setPower(1.0);
                     servoFlipL.setPosition(WorldConstants.flip.leftFlat);
                     servoFlipR.setPosition(WorldConstants.flip.rightFlat);
 
-                }else{
+                } else {
                     robotHandler.drive.mecanum.setMecanum(Math.toRadians(270), 1.0, PIDrotationOut, 1.0);
                 }
                 break;
@@ -542,8 +642,8 @@ public class WorldAuto extends WorldConfig {
                 previousColumn = targetColumn;
 //                targetColumn = getColumn(botGlyph, topGlyph);
 
-                targetColumn = (previousColumn==keyColumn)?((previousColumn==RelicRecoveryVuMark.LEFT||previousColumn==RelicRecoveryVuMark.RIGHT)?RelicRecoveryVuMark.CENTER:RelicRecoveryVuMark.LEFT):((previousColumn==RelicRecoveryVuMark.LEFT)?(RelicRecoveryVuMark.RIGHT):((previousColumn==RelicRecoveryVuMark.CENTER)?((keyColumn==RelicRecoveryVuMark.LEFT)?RelicRecoveryVuMark.RIGHT:RelicRecoveryVuMark.LEFT):RelicRecoveryVuMark.RIGHT));
-                if (numbCol==2){
+                targetColumn = (previousColumn == keyColumn) ? ((previousColumn == RelicRecoveryVuMark.LEFT || previousColumn == RelicRecoveryVuMark.RIGHT) ? RelicRecoveryVuMark.CENTER : RelicRecoveryVuMark.LEFT) : ((previousColumn == RelicRecoveryVuMark.LEFT) ? (RelicRecoveryVuMark.RIGHT) : ((previousColumn == RelicRecoveryVuMark.CENTER) ? ((keyColumn == RelicRecoveryVuMark.LEFT) ? RelicRecoveryVuMark.RIGHT : RelicRecoveryVuMark.LEFT) : RelicRecoveryVuMark.RIGHT));
+                if (numbCol == 2) {
                     targetColumn = previousColumn;
                 }
                 numbCol++;

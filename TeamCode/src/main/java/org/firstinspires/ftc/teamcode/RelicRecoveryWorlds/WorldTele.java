@@ -64,11 +64,7 @@ public class WorldTele extends WorldConfig {
         } else if (gamepad1.b) {
             rightArm = true;
             leftArm = false;
-        }
-        if (gamepad1.x) {
-            rightArm = false;
-            leftArm = false;
-        } else if (gamepad1.y) {
+        }else if (gamepad1.x) {
             rightArm = false;
             leftArm = true;
         }
@@ -76,19 +72,23 @@ public class WorldTele extends WorldConfig {
         servoAlignRight.setPosition((rightArm) ? WorldConstants.alignment.ALIGNRIGHTDOWN : WorldConstants.alignment.ALIGNRIGHTUP);
         servoAlignLeft.setPosition((leftArm) ? WorldConstants.alignment.ALIGNLEFTDOWN : WorldConstants.alignment.ALIGNLEFTUP);
         if (gamepad1.dpad_down || gamepad1.dpad_left || gamepad1.dpad_right) {
-            if (rightArm&&gamepad1.dpad_down&&limitRightBack.getState()){
+            if (rightArm && gamepad1.dpad_down && limitRightBack.getState()) {
                 speed = 0;
-            } else if (rightArm&&gamepad1.dpad_left&&limitRightSide.getState()){
+            } else if (rightArm && gamepad1.dpad_left && limitRightSide.getState()) {
                 speed = 0.0;
-            } else if (leftArm&&gamepad1.dpad_down&&limitLeftBack.getState()){
+            } else if (leftArm && gamepad1.dpad_down && limitLeftBack.getState()) {
                 speed = 0;
-            } else if (leftArm&&gamepad1.dpad_right&&limitRightBack.getState()){
+            } else if (leftArm && gamepad1.dpad_right && limitRightBack.getState()) {
                 speed = 0;
             } else {
-                speed = 0.4;
+                if (gamepad1.dpad_down) {
+                    speed = 0.6;
+                } else {
+                    speed = 0.7;
+                }
             }
-                robotHandler.drive.mecanum.setMecanum(Math.toRadians((gamepad1.dpad_down)?270:((gamepad1.dpad_left)?180:90)),speed,0 , 0);
-            if ((leftArm&&limitLeftSide.getState())||(rightArm&&limitRightSide.getState())){
+            robotHandler.drive.mecanum.setMecanum(Math.toRadians((gamepad1.dpad_down) ? 270 : ((gamepad1.dpad_left) ? 180 : 0)), speed, 0, 1.0);
+            if ((leftArm && limitLeftSide.getState()) || (rightArm && limitRightSide.getState())) {
                 servoFlipL.setPosition(WorldConstants.flip.leftUp);
                 servoFlipR.setPosition(WorldConstants.flip.rightUp);
             }
@@ -97,12 +97,13 @@ public class WorldTele extends WorldConfig {
             if (thirdPersonOn) {
                 robotHandler.drive.mecanum.updateMecanumThirdPerson(gamepad1, (gamepad1.right_stick_button || gamepad1.left_stick_button) ? .5 : 1.0, Math.toRadians(gyro - thirdPersonCal));
             } else {
-                robotHandler.drive.mecanum.updateMecanum(gamepad1, (gamepad1.right_stick_button||gamepad1.left_stick_button) ? 0.7 : 1.0, 0);
+                robotHandler.drive.mecanum.updateMecanum(gamepad1, (gamepad1.right_stick_button || gamepad1.left_stick_button) ? 0.7 : 1.0, 0);
             }
         }
+
         collectorSpeed = (gamepad1.right_trigger > 0.10) ? gamepad1.right_trigger : (gamepad1.left_trigger > 0.10) ? -gamepad1.left_trigger : 0;
-        motorCollectRight.setPower(collectorSpeed);
-        motorCollectLeft.setPower(-collectorSpeed);
+        motorCollectRight.setPower((gamepad1.y) ? 0.7 : collectorSpeed);
+        motorCollectLeft.setPower((gamepad1.y) ? 0.7 : -collectorSpeed);
         motorRelic.setPower((gamepad2.b) ? gamepad2.left_stick_y / 3 : gamepad2.left_stick_y);
 
         if (gamepad2.right_bumper) {

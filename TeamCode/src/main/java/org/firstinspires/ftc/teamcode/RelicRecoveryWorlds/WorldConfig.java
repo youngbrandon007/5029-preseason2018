@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.RelicRecoveryWorlds;
 
+import android.graphics.Color;
+
 import com.kauailabs.navx.ftc.AHRS;
 import com.kauailabs.navx.ftc.navXPIDController;
 import com.qualcomm.hardware.bosch.BNO055IMU;
@@ -67,9 +69,13 @@ public abstract class WorldConfig extends PineappleConfigOpMode {
     public PineappleSensor csJewelLeft;
     public PineappleSensor csJewelRight;
     public OpticalDistanceSensor opticalGlyph;
+    public OpticalDistanceSensor opticalRight;
+    public OpticalDistanceSensor opticalLeft;
     //    public ColorSensor glyphColor;
     public ColorSensor backGlyphColor;
     public DistanceSensor glyphDist;
+    public ColorSensor collectColor;
+    public DistanceSensor collectDist;
     public WorldPID PIDT;
 
     //GYRO
@@ -85,11 +91,12 @@ public abstract class WorldConfig extends PineappleConfigOpMode {
     public boolean switchDelayEnabled = false;
     public double slideDelay = 0.0;
     //Still need detecting
-    public boolean switchJewels = false;
+    public boolean switchJewels = true;
     public boolean switchMoreGlyphs = true;
     public boolean switchPID = true;
     public boolean switchHitBadJewel = false;
     public boolean firstReset = true;
+    public boolean otherfirstReset = true;
     public int numbCol = 0;
     BNO055IMU imu;
     // State used for updating telemetry
@@ -132,9 +139,13 @@ public abstract class WorldConfig extends PineappleConfigOpMode {
         limitRightSide = hardwareMap.digitalChannel.get("LRS");
 
         opticalGlyph = hardwareMap.opticalDistanceSensor.get("OPT");
+        opticalLeft = hardwareMap.opticalDistanceSensor.get("GODSL");
+        opticalRight = hardwareMap.opticalDistanceSensor.get("GODSR");
 //        glyphColor = hardwareMap.colorSensor.get("GC");
         backGlyphColor = hardwareMap.get(ColorSensor.class, "GCD");
         glyphDist = hardwareMap.get(DistanceSensor.class, "GCD");
+        collectColor = hardwareMap.get(ColorSensor.class, "CCD");
+        collectDist = hardwareMap.get(DistanceSensor.class, "CCD");
 
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
         parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
@@ -152,15 +163,15 @@ public abstract class WorldConfig extends PineappleConfigOpMode {
     }
 
     public void loadSwitchBoard() {
-//       switchColor = (robotHandler.switchBoard.loadDigital("color")) ? RelicRecoveryEnums.AutoColor.RED : RelicRecoveryEnums.AutoColor.BLUE;
+       switchColor = (robotHandler.switchBoard.loadDigital("color")) ? RelicRecoveryEnums.AutoColor.RED : RelicRecoveryEnums.AutoColor.BLUE;
 //        switchPosition = (robotHandler.switchBoard.loadDigital("position")) ? RelicRecoveryEnums.StartingPosition.FRONT : RelicRecoveryEnums.StartingPosition.BACK;
-//        switchColorPosition = (switchColor == RelicRecoveryEnums.AutoColor.RED) ? (switchPosition == RelicRecoveryEnums.StartingPosition.FRONT) ? RelicRecoveryEnums.ColorPosition.REDFRONT : RelicRecoveryEnums.ColorPosition.REDBACK : (switchPosition == RelicRecoveryEnums.StartingPosition.FRONT) ? RelicRecoveryEnums.ColorPosition.BLUEFRONT : RelicRecoveryEnums.ColorPosition.BLUEBACK;
+        switchColorPosition = (switchColor == RelicRecoveryEnums.AutoColor.RED) ? (switchPosition == RelicRecoveryEnums.StartingPosition.FRONT) ? RelicRecoveryEnums.ColorPosition.REDFRONT : RelicRecoveryEnums.ColorPosition.REDBACK : (switchPosition == RelicRecoveryEnums.StartingPosition.FRONT) ? RelicRecoveryEnums.ColorPosition.BLUEFRONT : RelicRecoveryEnums.ColorPosition.BLUEBACK;
 //        switchDelayEnabled = robotHandler.switchBoard.loadDigital("delayEnabled");
 //        slideDelay = (switchDelayEnabled) ? Math.round((1-robotHandler.switchBoard.loadAnalog("delay"))*30)/2 : 0.0;
 //
 //        switchMoreGlyphs = robotHandler.switchBoard.loadDigital("moreGlyph");
 //        switchPID = robotHandler.switchBoard.loadDigital("PID");
-//        switchJewels = robotHandler.switchBoard.loadDigital("jewel");
+        switchJewels = robotHandler.switchBoard.loadDigital("jewel");
 //        switchHitBadJewel = robotHandler.switchBoard.loadDigital("badJewel");
 
         colorPositionInt = (switchColor == RelicRecoveryEnums.AutoColor.RED) ? (switchPosition == RelicRecoveryEnums.StartingPosition.FRONT) ? 0 : 2 : (switchPosition == RelicRecoveryEnums.StartingPosition.FRONT) ? 1 : 3;
