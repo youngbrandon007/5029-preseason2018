@@ -23,11 +23,11 @@ public class WorldConstants {
     }
     public static class alignment {
         public static final double ALIGNLEFTINIT = 0.78;
-        public static final double ALIGNLEFTDOWN = 0.53;
-        public static final double ALIGNLEFTUP = 0.67;
+        public static final double ALIGNLEFTDOWN = 0.47;
+        public static final double ALIGNLEFTUP = 0.75;
         public static final double ALIGNRIGHTINIT = 0.17;
-        public static final double ALIGNRIGHTDOWN = 0.83;
-        public static final double ALIGNRIGHTUP = 0.3;
+        public static final double ALIGNRIGHTDOWN = 0.75;
+        public static final double ALIGNRIGHTUP = 0.27;
     }
     public static class drive {
         public static final double wheelSize = 4.0;
@@ -44,10 +44,10 @@ public class WorldConstants {
     public static class flip {
         public static final double rightDown = 1;
         public static final double leftDown = 0;
-        public static final double rightFlat = 0.7;
-        public static final double leftFlat = 0.3;
-        public static final double rightFlatAuto = 0.8;
-        public static final double leftFlatAuto = 0.2;
+        public static final double rightFlat = 0.6;
+        public static final double leftFlat = 0.4;
+        public static final double rightFlatAuto = 0.6;
+        public static final double leftFlatAuto = 0.4;
         public static final double rightUp = 0;
         public static final double leftUp = 1;
 //        public static final double rightFlat = 0.67;
@@ -143,7 +143,7 @@ public class WorldConstants {
                     };
             public static final double[][] AlignDrivingOffPlatformEncoder =
                     {
-                            {27 , 22, 22},
+                            {27 , 24, 22},
                             {0,0,0}
                     };
             public static final double[][]AlignDivingOffPlatformEncoderTillTurn =
@@ -169,14 +169,14 @@ public class WorldConstants {
             public enum jewelHitSide {
                 RIGHT, LEFT, NONE
             }
-            public static final double JEWELDOWN = 0.8;
+            public static final double JEWELDOWN = 0.70;
             public static final double JEWELUP = 0;
             public static final double JEWELHITRIGHT = 0;
             public static final double JEWELHITLEFT = 0.9;
             public static final double JEWELHITCENTER = 0.5;
 
-            public static final int JEWELDOWNMILI = 1200;
-            public static final int JEWELUPMILI = 800;
+            public static final int JEWELDOWNMILI = 1500;
+            public static final int JEWELUPMILI = 500;
             public static final int JEWELHITMILI = 500;
 
         }
