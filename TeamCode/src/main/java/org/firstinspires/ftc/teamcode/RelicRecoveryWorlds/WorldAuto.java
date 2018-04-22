@@ -392,7 +392,7 @@ public class WorldAuto extends WorldConfig {
 
             PIDrotationOut = -PID.getOutput(gyro, TARGETANGLE);//gyro
 
-            if (Math.abs(TARGETANGLE - gyro) < 5) {
+            if (Math.abs(TARGETANGLE - gyro) < 3) {
 
                 PIDonTarget = true;
 
@@ -401,6 +401,9 @@ public class WorldAuto extends WorldConfig {
                 PIDonTarget = false;
 
             }
+
+        } else {
+            PIDrotationOut = 0;
 
         }
 
@@ -491,7 +494,7 @@ public class WorldAuto extends WorldConfig {
                     servoJewel.setPosition(WorldConstants.auto.jewel.JEWELDOWN);
 
 
-                    if (wait.milliseconds() > 1000) {
+                    if (wait.milliseconds() > 700) {
 
                         auto = AutoEnum.JEWELHIT;
 
@@ -641,11 +644,11 @@ public class WorldAuto extends WorldConfig {
 
                     robotHandler.drive.stop();
 
-                    auto = WorldAuto.AutoEnum.ALIGNDRIVEINTOCRYPTO;
+                    auto = AutoEnum.COLLECT;
 
                     wait.reset();
 
-                    switchPID = false;
+//                    switchPID = false;
 
                     PIDrotationOut = 0;
 
@@ -656,9 +659,10 @@ public class WorldAuto extends WorldConfig {
 
             case ALIGNDRIVEINTOCRYPTO:
 
-                robotHandler.drive.mecanum.setMecanum(Math.toRadians(270), .5, PIDrotationOut, 1.0);
 
-                if ((limitRightBack.getState() && usingRightArm) || (limitLeftBack.getState() && !usingRightArm) || wait.milliseconds() > 3000) {
+                robotHandler.drive.mecanum.setMecanum(Math.toRadians(270), .3, PIDrotationOut, 1.0);
+
+                if ((limitRightBack.getState() && usingRightArm) || (limitLeftBack.getState() && !usingRightArm)) {
 
                     robotHandler.drive.stop();
 
@@ -668,7 +672,15 @@ public class WorldAuto extends WorldConfig {
 
                     motorCollectLeft.setPower(0);
 
-                    robotHandler.drive.mecanum.setMecanum(Math.toRadians(90), 0.4, PIDrotationOut, 1.0);
+                }
+                 else if (wait.milliseconds() > 3000){
+                    robotHandler.drive.stop();
+
+                    auto = AutoEnum.GLYPHPLACE;
+
+                    motorCollectRight.setPower(0);
+
+                    motorCollectLeft.setPower(0);
 
                 }
 
@@ -677,6 +689,9 @@ public class WorldAuto extends WorldConfig {
             case GLYPH:
 
                 auto = AutoEnum.GLYPHSTRAFFTOALIGN;
+                motorCollectRight.setPower(1.0);
+
+                motorCollectLeft.setPower(-1.0);
 
                 wait.reset();
 
@@ -696,8 +711,8 @@ public class WorldAuto extends WorldConfig {
 
 //                        robotHandler.drive.mecanum.setMecanum(Math.toRadians(90), 0.4, PIDrotationOut, 1.0);
 
-                    robotHandler.drive.mecanum.setMecanum(Math.toRadians((usingRightArm) ? 0 : 180), 0.6, PIDrotationOut, 1.0);
-
+//                    robotHandler.drive.mecanum.setMecanum(Math.toRadians((usingRightArm) ? 0 : 180), 0.6, PIDrotationOut, 1.0);
+                    robotHandler.drive.mecanum.setMecanum(Math.toRadians(90), 0.6, PIDrotationOut, 1.0);
                     wait.reset();
 
                 }
@@ -767,6 +782,7 @@ public class WorldAuto extends WorldConfig {
                 break;
 
             case COLLECT:
+//                switchPID = false;
 
                 resetEncoders();
 
@@ -778,7 +794,7 @@ public class WorldAuto extends WorldConfig {
                 motorCollectLeft.setPower(-1.0);
 
 
-                if(autoTime.milliseconds() > 21000) auto = AutoEnum.COLLECTDRIVEBACKFROMCRYPTO;
+                if (autoTime.milliseconds() > 25000) auto = AutoEnum.COLLECTDRIVEBACKFROMCRYPTO;
 
                 break;
 
@@ -796,7 +812,7 @@ public class WorldAuto extends WorldConfig {
 
             case COLLECTGOTOPIT:
 
-                robotHandler.drive.mecanum.setMecanum(Math.toRadians((numbCol >= 1) ? ((keyColumn == RelicRecoveryVuMark.RIGHT) ? 65 : 115) : 90), 1.0, PIDrotationOut, 1.0);
+                robotHandler.drive.mecanum.setMecanum(Math.toRadians((numbCol >= 1) ? ((keyColumn == RelicRecoveryVuMark.RIGHT) ? 50 : 130) : 90), 1.0, PIDrotationOut, 1.0);
 
                 if (traveledEncoderTicks(WorldConstants.drive.countsPerInches(WorldConstants.auto.aligning.CollectDistToPit))) {
 
@@ -827,7 +843,7 @@ public class WorldAuto extends WorldConfig {
 
             case COLLECTGLYPHS:
 
-
+//                PIDrotationOut = 0;
 ////                     if (RPM<0) {
 
 ////                        x++;
@@ -891,7 +907,7 @@ public class WorldAuto extends WorldConfig {
 
 //                        TARGETANGLE=90;
 
-                        robotHandler.drive.mecanum.setMecanum(Math.toRadians(270), 0.65, PIDrotationOut, 1.0);
+                        robotHandler.drive.mecanum.setMecanum(Math.toRadians(270), .3, PIDrotationOut, 1.0);
 
                     } else {
 
@@ -900,11 +916,11 @@ public class WorldAuto extends WorldConfig {
 //                        robotHandler.drive.mecanum.setMecanum(Math.toRadians(270), 0.4, PIDrotationOut, 1.0);
 
 
-                        if (wait.milliseconds() % 1200 > 750) {
+                        if (wait.milliseconds() % 1500 > 750) {
 
-                            motorCollectRight.setPower(1.0);
+                            motorCollectRight.setPower(0.7);
 
-                            motorCollectLeft.setPower(1.0);
+                            motorCollectLeft.setPower(0.7);
 
                         } else {
 
@@ -920,7 +936,7 @@ public class WorldAuto extends WorldConfig {
 
                     if (wait.milliseconds() > 2000) {
 
-                        robotHandler.drive.mecanum.setMecanum(Math.toRadians(270), 0.4, PIDrotationOut, 1.0);
+                        robotHandler.drive.mecanum.setMecanum(Math.toRadians(270), 0.3, PIDrotationOut, 1.0);
 
                         motorCollectRight.setPower(0.7);
 
@@ -938,18 +954,18 @@ public class WorldAuto extends WorldConfig {
                             driveRPM.reset();
                             double dist = getTraveledEncoderTicks() - travelDist;
                             travelDist = getTraveledEncoderTicks();
-                            if (Math.abs(dist) < 5) {
+                            if (Math.abs(dist) < 10) {
                                 speedUp = true;
-                            }else{
-                                speedUp=false;
+                            } else {
+                                speedUp = false;
                             }
                         }
-
-                        robotHandler.drive.mecanum.setMecanum(Math.toRadians(90),  0.5, PIDrotationOut, 1.0);
+                        motorCollectLeft.setPower(-1.0);
 
                         motorCollectRight.setPower(1.0);
 
-                        motorCollectLeft.setPower((speedUp) ? 1.0 : -1.0);
+
+                        robotHandler.drive.mecanum.setMecanum(Math.toRadians(90), (speedUp) ? 1 : 0.3, PIDrotationOut, 1.0);
 
                     }
 
@@ -998,8 +1014,13 @@ public class WorldAuto extends WorldConfig {
                 if (traveledEncoderTicks(trackBack - WorldConstants.drive.countsPerInches(WorldConstants.auto.aligning.GlyphDistanceToCrypto))) {
 
                     robotHandler.drive.mecanum.setMecanum(Math.toRadians(90), .1, PIDrotationOut, 1.0);
+                    if (firstGlyph) {
+                        auto = AutoEnum.ALIGNDRIVEINTOCRYPTO;
+                        firstGlyph = false;
 
-                    auto = AutoEnum.CHANGESETPOINT;
+                    } else {
+                        auto = AutoEnum.CHANGESETPOINT;
+                    }
 
                     resetEncoders();
 
@@ -1048,6 +1069,8 @@ public class WorldAuto extends WorldConfig {
                 }
 
                 numbCol++;
+                firstGlyph = false;
+
 
                 columnNumber = columnNumber(targetColumn);
 
@@ -1267,9 +1290,9 @@ public class WorldAuto extends WorldConfig {
         WorldConstants.auto.jewel.jewelState state = NON_NON;
         if (left == NON_NON && right == NON_NON) {
             state = NON_NON;
-        } else if (left == NON_NON){
+        } else if (left == NON_NON) {
             state = right;
-        } else if (right == NON_NON){
+        } else if (right == NON_NON) {
             state = left;
         } else {
             state = left;

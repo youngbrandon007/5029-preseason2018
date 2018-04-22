@@ -112,10 +112,10 @@ public class PineappleMecanumDrive extends PineappleDriveAbstract {
         }
 
 
-        setMotor(PineappleEnum.MotorLoc.LEFTFRONT, multipliers[0] * scale, false);
-        setMotor(PineappleEnum.MotorLoc.RIGHTFRONT, multipliers[1] * scale, false);
-        setMotor(PineappleEnum.MotorLoc.LEFTBACK, multipliers[2] * scale, false);
-        setMotor(PineappleEnum.MotorLoc.RIGHTBACK, multipliers[3] * scale, false);
+        setMotor(PineappleEnum.MotorLoc.LEFTFRONT, multipliers[0] * scale, true);
+        setMotor(PineappleEnum.MotorLoc.RIGHTFRONT, multipliers[1] * scale, true);
+        setMotor(PineappleEnum.MotorLoc.LEFTBACK, multipliers[2] * scale, true);
+        setMotor(PineappleEnum.MotorLoc.RIGHTBACK, multipliers[3] * scale, true);
 
     }
 

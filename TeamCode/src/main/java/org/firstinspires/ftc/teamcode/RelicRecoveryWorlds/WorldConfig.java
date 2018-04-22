@@ -98,6 +98,7 @@ public abstract class WorldConfig extends PineappleConfigOpMode {
     public boolean firstReset = true;
     public boolean otherfirstReset = true;
     public int numbCol = 0;
+    public boolean firstGlyph = true;
     BNO055IMU imu;
     // State used for updating telemetry
     Orientation angles;
@@ -149,6 +150,7 @@ public abstract class WorldConfig extends PineappleConfigOpMode {
 
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
         parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
+        parameters.calibrationDataFile = "BNO055IMUCalibration.json";
         //parameters.accelUnit           = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
         //parameters.calibrationDataFile = "BNO055IMUCalibration.json"; // see the calibration sample opmode
         parameters.loggingEnabled = true;
