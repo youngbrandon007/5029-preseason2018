@@ -900,7 +900,7 @@ public class WorldAuto extends WorldConfig {
 //                        robotHandler.drive.mecanum.setMecanum(Math.toRadians(270), 0.4, PIDrotationOut, 1.0);
 
 
-                        if (wait.milliseconds() % 1500 > 750) {
+                        if (wait.milliseconds() % 1200 > 750) {
 
                             motorCollectRight.setPower(1.0);
 
@@ -938,18 +938,18 @@ public class WorldAuto extends WorldConfig {
                             driveRPM.reset();
                             double dist = getTraveledEncoderTicks() - travelDist;
                             travelDist = getTraveledEncoderTicks();
-                            if (Math.abs(travelDist) < 5) {
+                            if (Math.abs(dist) < 5) {
                                 speedUp = true;
                             }else{
                                 speedUp=false;
                             }
                         }
 
-                        robotHandler.drive.mecanum.setMecanum(Math.toRadians(90), (speedUp) ? 1.0 : 0.5, PIDrotationOut, 1.0);
+                        robotHandler.drive.mecanum.setMecanum(Math.toRadians(90),  0.5, PIDrotationOut, 1.0);
 
                         motorCollectRight.setPower(1.0);
 
-                        motorCollectLeft.setPower(-1.0);
+                        motorCollectLeft.setPower((speedUp) ? 1.0 : -1.0);
 
                     }
 
