@@ -129,6 +129,9 @@ public class WorldTele extends WorldConfig {
         } else if (gamepad2.a) {
             servoFlipL.setPosition(WorldConstants.flip.leftDown);
             servoFlipR.setPosition(WorldConstants.flip.rightDown);
+        } else if (gamepad2.b){
+            servoFlipL.setPosition(WorldConstants.flip.leftFlatAuto);
+            servoFlipR.setPosition(WorldConstants.flip.rightFlatAuto);
         }
         if (gamepad2.dpad_left || gamepad2.dpad_right) {
             autoLiftOn = true;

@@ -42,20 +42,22 @@ public class WorldConstants {
     }
 
     public static class flip {
-        public static final double rightDown = 1;
-        public static final double leftDown = 0;
-        public static final double rightFlat = 0.6;
-        public static final double leftFlat = 0.4;
-        public static final double rightFlatAuto = 0.6;
-        public static final double leftFlatAuto = 0.4;
-        public static final double rightUp = 0;
-        public static final double leftUp = 1;
-//        public static final double rightFlat = 0.67;
-//        public static final double leftFlat = 0.32;
-//        public static final double rightFlatAuto = 0.59;
-//        public static final double leftFlatAuto = 0.4;
-//        public static final double rightUp = 0.2;
-//        public static final double leftUp = 0.81;
+//        public static final double rightDown = 1;
+//        public static final double leftDown = 0;
+//        public static final double rightFlat = 0.6;
+//        public static final double leftFlat = 0.4;
+        public static final double rightFlatAuto = 0.67;
+        public static final double leftFlatAuto = 0.32;
+//        public static final double rightUp = 0;
+//        public static final double leftUp = 1;
+public static final double rightDown = 0.87;
+        public static final double leftDown = 0.1;
+
+        public static final double rightFlat = 0.77;
+        public static final double leftFlat = 0.22;
+
+        public static final double rightUp = 0.2;
+        public static final double leftUp = 0.81;
         public static final double stopUp = 0.5;
         public static final double stopDown = 1;
     }
