@@ -1559,7 +1559,7 @@ public class WorldAuto extends WorldConfig {
 
         }
 
-        double average = total / 4;
+        double average = total / 3;//NEEEEEEDDDDS TO BE CHANGED BACK ONLY CHANGED FOR WORLDS
 
         double[] distance = {0.0, 0.0, 0.0, 0.0};
 
