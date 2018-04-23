@@ -455,112 +455,113 @@ public class WorldAuto extends WorldConfig {
 
         telemetry.addLine("GYRO→TARGET: " + gyro + "→" + TARGETANGLE);//gyro
 
+        switch (switchPosition) {
+            case FRONT:
+                switch (auto) {
 
-        switch (auto) {
+                    case WAIT:
 
-            case WAIT:
+                        if (!switchDelayEnabled || wait.seconds() >= slideDelay) {
 
-                if (!switchDelayEnabled || wait.seconds() >= slideDelay) {
+                            auto = AutoEnum.JEWELS;
 
-                    auto = AutoEnum.JEWELS;
+                        }
 
-                }
+                        break;
 
-                break;
+                    case JEWELS:
 
-            case JEWELS:
+                        if (!switchJewels) {
 
-                if (!switchJewels) {
+                            auto = AutoEnum.ALIGN;
 
-                    auto = AutoEnum.ALIGN;
+                        } else {
 
-                } else {
+                            auto = AutoEnum.JEWELDOWN;
 
-                    auto = AutoEnum.JEWELDOWN;
+                            wait.reset();
 
-                    wait.reset();
+                        }
 
-                }
+                        break;
 
-                break;
+                    case JEWELDOWN:
 
-            case JEWELDOWN:
-
-                servoJewelHit.setPosition(WorldConstants.auto.jewel.JEWELHITCENTER);
-
-
-                if (wait.milliseconds() > 200) {
-
-                    servoJewel.setPosition(WorldConstants.auto.jewel.JEWELDOWN);
+                        servoJewelHit.setPosition(WorldConstants.auto.jewel.JEWELHITCENTER);
 
 
-                    if (wait.milliseconds() > 700) {
+                        if (wait.milliseconds() > 200) {
 
-                        auto = AutoEnum.JEWELHIT;
-
-                        wait.reset();
-
-                    }
-
-                }
-
-                jewelCSLEDON();
-
-                break;
-
-            case JEWELHIT:
-
-                if (wait.milliseconds() > jewelHit()) {
-
-                    auto = AutoEnum.JEWELUP;
-
-                    wait.reset();
-
-                }
-
-                break;
-
-            case JEWELUP:
-                servoJewel.setPosition(WorldConstants.auto.jewel.JEWELUP);
-                if (wait.milliseconds() > 400) {
-
-                    auto = AutoEnum.ALIGN;
-
-                    wait.reset();
-
-                    servoJewelHit.setPosition(0.5);
-
-                }
+                            servoJewel.setPosition(WorldConstants.auto.jewel.JEWELDOWN);
 
 
-                break;
+                            if (wait.milliseconds() > 700) {
 
-            case ALIGN:
+                                auto = AutoEnum.JEWELHIT;
+
+                                wait.reset();
+
+                            }
+
+                        }
+
+                        jewelCSLEDON();
+
+                        break;
+
+                    case JEWELHIT:
+
+                        if (wait.milliseconds() > jewelHit()) {
+
+                            auto = AutoEnum.JEWELUP;
+
+                            wait.reset();
+
+                        }
+
+                        break;
+
+                    case JEWELUP:
+                        servoJewel.setPosition(WorldConstants.auto.jewel.JEWELUP);
+                        if (wait.milliseconds() > 400) {
+
+                            auto = AutoEnum.ALIGN;
+
+                            wait.reset();
+
+                            servoJewelHit.setPosition(0.5);
+
+                        }
 
 
-                auto = AutoEnum.KEYCOLUMNSET;
+                        break;
 
-                break;
-
-            case KEYCOLUMNSET:
-
-                if (keyColumn != RelicRecoveryVuMark.UNKNOWN) {
-
-                    targetColumn = keyColumn;
+                    case ALIGN:
 
 
-                }
+                        auto = AutoEnum.KEYCOLUMNSET;
+
+                        break;
+
+                    case KEYCOLUMNSET:
+
+                        if (keyColumn != RelicRecoveryVuMark.UNKNOWN) {
+
+                            targetColumn = keyColumn;
 
 
-                columnNumber = columnNumber(targetColumn);
+                        }
 
-                auto = AutoEnum.ALIGNDRIVEOFFPLATFORM;
 
-                resetEncoders();
+                        columnNumber = columnNumber(targetColumn);
 
-                servoJewelHit.setPosition(WorldConstants.auto.jewel.JEWELHITLEFT);
+                        auto = AutoEnum.ALIGNDRIVEOFFPLATFORM;
 
-                break;
+                        resetEncoders();
+
+                        servoJewelHit.setPosition(WorldConstants.auto.jewel.JEWELHITLEFT);
+
+                        break;
 
 //            case ALIGNDRIVEOFFPLATFORM: DOES NOT DRIVE STRAIGHT
 
@@ -610,225 +611,225 @@ public class WorldAuto extends WorldConfig {
 
 //                break;
 
-            case ALIGNDRIVEOFFPLATFORM:
+                    case ALIGNDRIVEOFFPLATFORM:
 
-                servoJewelHit.setPosition(WorldConstants.auto.jewel.JEWELHITLEFT);
+                        servoJewelHit.setPosition(WorldConstants.auto.jewel.JEWELHITLEFT);
 
-                robotHandler.drive.mecanum.setMecanum(Math.toRadians(WorldConstants.auto.aligning.AlignDriveOffPlatformDirection[colorPositionInt]), 1, PIDrotationOut, 1.0);
+                        robotHandler.drive.mecanum.setMecanum(Math.toRadians(WorldConstants.auto.aligning.AlignDriveOffPlatformDirection[colorPositionInt]), 1, PIDrotationOut, 1.0);
 
-                if (traveledEncoderTicks(WorldConstants.drive.countsPerInches(WorldConstants.auto.aligning.AlignDrivingOffPlatformEncoder[colorPositionInt][columnNumber]))) {
+                        if (traveledEncoderTicks(WorldConstants.drive.countsPerInches(WorldConstants.auto.aligning.AlignDrivingOffPlatformEncoder[colorPositionInt][columnNumber]))) {
 
-                    robotHandler.drive.stop();
+                            robotHandler.drive.stop();
 
-                    TARGETANGLE = WorldConstants.auto.aligning.AlignTurnAngle[colorPositionInt];
+                            TARGETANGLE = WorldConstants.auto.aligning.AlignTurnAngle[colorPositionInt];
 
-                    PID.reset();
+                            PID.reset();
 
-                    auto = WorldAuto.AutoEnum.ALIGNTURN;
+                            auto = WorldAuto.AutoEnum.ALIGNTURN;
 
-                }
+                        }
 
-                break;
+                        break;
 
-            case ALIGNTURN:
+                    case ALIGNTURN:
 
-                robotHandler.drive.mecanum.setMecanum(0.0, 0.0, PIDrotationOut, 1.0);
+                        robotHandler.drive.mecanum.setMecanum(0.0, 0.0, PIDrotationOut, 1.0);
 
-                servoAlignRight.setPosition(WorldConstants.auto.aligning.AlignArmPosition[colorPositionInt][0][columnNumber]);
+                        servoAlignRight.setPosition(WorldConstants.auto.aligning.AlignArmPosition[colorPositionInt][0][columnNumber]);
 
-                servoAlignLeft.setPosition(WorldConstants.auto.aligning.AlignArmPosition[colorPositionInt][1][columnNumber]);
+                        servoAlignLeft.setPosition(WorldConstants.auto.aligning.AlignArmPosition[colorPositionInt][1][columnNumber]);
 
-                usingRightArm = WorldConstants.auto.aligning.AlignSwitchClicked[colorPositionInt][0][columnNumber];
+                        usingRightArm = WorldConstants.auto.aligning.AlignSwitchClicked[colorPositionInt][0][columnNumber];
 
-                if (PIDonTarget) {
+                        if (PIDonTarget) {
 
-                    robotHandler.drive.stop();
+                            robotHandler.drive.stop();
 
-                    auto = AutoEnum.COLLECT;
+                            auto = AutoEnum.COLLECT;
 
-                    wait.reset();
+                            wait.reset();
 
 //                    switchPID = false;
 
-                    PIDrotationOut = 0;
+                            PIDrotationOut = 0;
 
-                }
+                        }
 
-                break;
-
-
-            case ALIGNDRIVEINTOCRYPTO:
+                        break;
 
 
-                robotHandler.drive.mecanum.setMecanum(Math.toRadians(270), .3, PIDrotationOut, 1.0);
+                    case ALIGNDRIVEINTOCRYPTO:
 
-                if ((limitRightBack.getState() && usingRightArm) || (limitLeftBack.getState() && !usingRightArm)) {
 
-                    robotHandler.drive.stop();
+                        robotHandler.drive.mecanum.setMecanum(Math.toRadians(270), .3, PIDrotationOut, 1.0);
 
-                    auto = AutoEnum.GLYPH;
+                        if ((limitRightBack.getState() && usingRightArm) || (limitLeftBack.getState() && !usingRightArm)) {
 
-                    motorCollectRight.setPower(0);
+                            robotHandler.drive.stop();
 
-                    motorCollectLeft.setPower(0);
+                            auto = AutoEnum.GLYPH;
 
-                }
-                 else if (wait.milliseconds() > 3000){
-                    robotHandler.drive.stop();
+                            motorCollectRight.setPower(0);
 
-                    auto = AutoEnum.GLYPHPLACE;
+                            motorCollectLeft.setPower(0);
 
-                    motorCollectRight.setPower(0);
+                        } else if (wait.milliseconds() > 3000) {
+                            robotHandler.drive.stop();
 
-                    motorCollectLeft.setPower(0);
+                            auto = AutoEnum.GLYPHPLACE;
 
-                }
+                            motorCollectRight.setPower(0);
 
-                break;
+                            motorCollectLeft.setPower(0);
 
-            case GLYPH:
+                        }
 
-                auto = AutoEnum.GLYPHSTRAFFTOALIGN;
-                motorCollectRight.setPower(1.0);
+                        break;
 
-                motorCollectLeft.setPower(-1.0);
+                    case GLYPH:
 
-                wait.reset();
+                        auto = AutoEnum.GLYPHSTRAFFTOALIGN;
+                        motorCollectRight.setPower(1.0);
 
-                break;
+                        motorCollectLeft.setPower(-1.0);
 
-            case GLYPHSTRAFFTOALIGN:
+                        wait.reset();
 
-                switchPID = true;
+                        break;
 
-                robotHandler.drive.mecanum.setMecanum(Math.toRadians((usingRightArm) ? 180 : 0), .7, PIDrotationOut, 1.0);
+                    case GLYPHSTRAFFTOALIGN:
 
-                if ((limitRightSide.getState() && usingRightArm) || (limitLeftSide.getState() && !usingRightArm) || wait.milliseconds() > 3000) {
+                        switchPID = true;
 
-                    robotHandler.drive.stop();
+                        robotHandler.drive.mecanum.setMecanum(Math.toRadians((usingRightArm) ? 180 : 0), .7, PIDrotationOut, 1.0);
 
-                    auto = AutoEnum.GLYPHPLACE;
+                        if ((limitRightSide.getState() && usingRightArm) || (limitLeftSide.getState() && !usingRightArm) || wait.milliseconds() > 3000) {
+
+                            robotHandler.drive.stop();
+
+                            auto = AutoEnum.GLYPHPLACE;
 
 //                        robotHandler.drive.mecanum.setMecanum(Math.toRadians(90), 0.4, PIDrotationOut, 1.0);
 
 //                    robotHandler.drive.mecanum.setMecanum(Math.toRadians((usingRightArm) ? 0 : 180), 0.6, PIDrotationOut, 1.0);
-                    robotHandler.drive.mecanum.setMecanum(Math.toRadians(90), 0.6, PIDrotationOut, 1.0);
-                    wait.reset();
+                            robotHandler.drive.mecanum.setMecanum(Math.toRadians(90), 0.6, PIDrotationOut, 1.0);
+                            wait.reset();
 
-                }
+                        }
 
-                break;
-
-
-            case GLYPHPLACE:
+                        break;
 
 
-                robotHandler.drive.mecanum.setMecanum(0, 0, PIDrotationOut, 1.0);
+                    case GLYPHPLACE:
 
 
-                servoFlipL.setPosition(WorldConstants.flip.leftUp);
-
-                servoFlipR.setPosition(WorldConstants.flip.rightUp);
-
-                servoAlignLeft.setPosition(WorldConstants.alignment.ALIGNLEFTUP);
-
-                servoAlignRight.setPosition(WorldConstants.alignment.ALIGNRIGHTUP);
-
-                if (wait.milliseconds() > 500) {
-
-                    //addGlyphsToColumn(COLUMN, FIRST GLYPH COLOR, SECOND GLYPH COLOR);
-
-                    addGlyphsToColumn(targetColumn, botGlyph, topGlyph);
+                        robotHandler.drive.mecanum.setMecanum(0, 0, PIDrotationOut, 1.0);
 
 
-                    auto = AutoEnum.GLYPHINTOBOX;
+                        servoFlipL.setPosition(WorldConstants.flip.leftUp);
 
-                    wait.reset();
+                        servoFlipR.setPosition(WorldConstants.flip.rightUp);
 
-                }
+                        servoAlignLeft.setPosition(WorldConstants.alignment.ALIGNLEFTUP);
 
-                break;
+                        servoAlignRight.setPosition(WorldConstants.alignment.ALIGNRIGHTUP);
 
-            case GLYPHINTOBOX:
+                        if (wait.milliseconds() > 500) {
 
-                robotHandler.drive.mecanum.setMecanum(Math.toRadians(270), 0.5, PIDrotationOut, 1.0);
+                            //addGlyphsToColumn(COLUMN, FIRST GLYPH COLOR, SECOND GLYPH COLOR);
 
-                if (wait.milliseconds() > 500) {
+                            addGlyphsToColumn(targetColumn, botGlyph, topGlyph);
 
-                    //addGlyphsToColumn(COLUMN, FIRST GLYPH COLOR, SECOND GLYPH COLOR);
 
-                    robotHandler.drive.mecanum.setMecanum(Math.toRadians(90), 1.0, PIDrotationOut, 1.0);
+                            auto = AutoEnum.GLYPHINTOBOX;
 
-                    auto = AutoEnum.GLYPHPLACERESET;
+                            wait.reset();
 
-                    wait.reset();
+                        }
 
-                }
+                        break;
 
-                break;
+                    case GLYPHINTOBOX:
 
-            case GLYPHPLACERESET:
+                        robotHandler.drive.mecanum.setMecanum(Math.toRadians(270), 0.5, PIDrotationOut, 1.0);
 
-                lift = 0;
+                        if (wait.milliseconds() > 500) {
 
-                robotHandler.drive.stop();
+                            //addGlyphsToColumn(COLUMN, FIRST GLYPH COLOR, SECOND GLYPH COLOR);
 
-                servoFlipL.setPosition(WorldConstants.flip.leftDown);
+                            robotHandler.drive.mecanum.setMecanum(Math.toRadians(90), 1.0, PIDrotationOut, 1.0);
 
-                servoFlipR.setPosition(WorldConstants.flip.rightDown);
+                            auto = AutoEnum.GLYPHPLACERESET;
 
-                auto = AutoEnum.COLLECT;
+                            wait.reset();
 
-                break;
+                        }
 
-            case COLLECT:
+                        break;
+
+                    case GLYPHPLACERESET:
+
+                        lift = 0;
+
+                        robotHandler.drive.stop();
+
+                        servoFlipL.setPosition(WorldConstants.flip.leftDown);
+
+                        servoFlipR.setPosition(WorldConstants.flip.rightDown);
+
+                        auto = AutoEnum.COLLECT;
+
+                        break;
+
+                    case COLLECT:
 //                switchPID = false;
 
-                resetEncoders();
+                        resetEncoders();
 
 
-                auto = AutoEnum.COLLECTGOTOPIT;
+                        auto = AutoEnum.COLLECTGOTOPIT;
 
-                motorCollectRight.setPower(1.0);
+                        motorCollectRight.setPower(1.0);
 
-                motorCollectLeft.setPower(-1.0);
+                        motorCollectLeft.setPower(-1.0);
 
 
-                if (autoTime.milliseconds() > 25000) auto = AutoEnum.COLLECTDRIVEBACKFROMCRYPTO;
+                        if (autoTime.milliseconds() > 25000)
+                            auto = AutoEnum.COLLECTDRIVEBACKFROMCRYPTO;
 
-                break;
+                        break;
 
-            case COLLECTDRIVEBACKFROMCRYPTO:
+                    case COLLECTDRIVEBACKFROMCRYPTO:
 
-                break;
+                        break;
 
-            case COLLECTSTRAFFTOCENTER:
+                    case COLLECTSTRAFFTOCENTER:
 
-                break;
+                        break;
 
-            case COLLECTSTARTTRACKING:
+                    case COLLECTSTARTTRACKING:
 
-                break;
+                        break;
 
-            case COLLECTGOTOPIT:
+                    case COLLECTGOTOPIT:
 
-                robotHandler.drive.mecanum.setMecanum(Math.toRadians((numbCol >= 1) ? ((keyColumn == RelicRecoveryVuMark.RIGHT) ? 50 : 130) : 90), 1.0, PIDrotationOut, 1.0);
+                        robotHandler.drive.mecanum.setMecanum(Math.toRadians((numbCol >= 1) ? ((keyColumn == RelicRecoveryVuMark.RIGHT) ? 50 : 130) : 90), 1.0, PIDrotationOut, 1.0);
 
-                if (traveledEncoderTicks(WorldConstants.drive.countsPerInches(WorldConstants.auto.aligning.CollectDistToPit))) {
+                        if (traveledEncoderTicks(WorldConstants.drive.countsPerInches(WorldConstants.auto.aligning.CollectDistToPit))) {
 
-                    robotHandler.drive.stop();
+                            robotHandler.drive.stop();
 
-                    wait.reset();
+                            wait.reset();
 
-                    auto = AutoEnum.COLLECTGLYPHS;
+                            auto = AutoEnum.COLLECTGLYPHS;
 
-                    servoFlipL.setPosition(WorldConstants.flip.leftDown);
+                            servoFlipL.setPosition(WorldConstants.flip.leftDown);
 
-                    servoFlipR.setPosition(WorldConstants.flip.rightDown);
+                            servoFlipR.setPosition(WorldConstants.flip.rightDown);
 
-                    oneGlyphCollected = 0;
+                            oneGlyphCollected = 0;
 
-                    firstReset = true;
+                            firstReset = true;
 
 //                    if (numbCol==0){
 
@@ -837,11 +838,11 @@ public class WorldAuto extends WorldConfig {
 //                    }
 
 
-                }
+                        }
 
-                break;
+                        break;
 
-            case COLLECTGLYPHS:
+                    case COLLECTGLYPHS:
 
 //                PIDrotationOut = 0;
 ////                     if (RPM<0) {
@@ -862,26 +863,26 @@ public class WorldAuto extends WorldConfig {
 
 ////                    }
 
-                if (traveledEncoderTicks(WorldConstants.drive.countsPerInches(60)) || autoTime.milliseconds() > 25000) {
+                        if (traveledEncoderTicks(WorldConstants.drive.countsPerInches(60)) || autoTime.milliseconds() > 25000) {
 
-                    robotHandler.drive.stop();
+                            robotHandler.drive.stop();
 
-                    auto = AutoEnum.COLLECTFINISHCOLLECTING;
+                            auto = AutoEnum.COLLECTFINISHCOLLECTING;
 
-                    wait.reset();
+                            wait.reset();
 
-                    topGlyph = getGlyph();
+                            topGlyph = getGlyph();
 
-                } else if (motorLift.getEncoderPosition() > -30 && glyphDist.getDistance(DistanceUnit.CM) < 20 && glyphDist.getDistance(DistanceUnit.CM) > 5) {
+                        } else if (motorLift.getEncoderPosition() > -30 && glyphDist.getDistance(DistanceUnit.CM) < 20 && glyphDist.getDistance(DistanceUnit.CM) > 5) {
 
-                    robotHandler.drive.stop();
+                            robotHandler.drive.stop();
 
 
-                    auto = AutoEnum.COLLECTFINISHCOLLECTING;//TODO CHANGE BACK
+                            auto = AutoEnum.COLLECTFINISHCOLLECTING;//TODO CHANGE BACK
 
-                    wait.reset();
+                            wait.reset();
 
-                    topGlyph = getGlyph();
+                            topGlyph = getGlyph();
 
 //                } else if((glyphColor.red() + glyphColor.green() + glyphColor.blue())/3.0 > 0){
 
@@ -893,87 +894,87 @@ public class WorldAuto extends WorldConfig {
 
 //                    }
 
-                } else if (opticalGlyph.getLightDetected() > .23) {
+                        } else if (opticalGlyph.getLightDetected() > .23) {
 
-                    if (firstReset) {
+                            if (firstReset) {
 
-                        wait.reset();
+                                wait.reset();
 
-                        firstReset = false;
+                                firstReset = false;
 
-                    }
+                            }
 
-                    if (wait.milliseconds() < 500) {
+                            if (wait.milliseconds() < 500) {
 
 //                        TARGETANGLE=90;
 
-                        robotHandler.drive.mecanum.setMecanum(Math.toRadians(270), .3, PIDrotationOut, 1.0);
+                                robotHandler.drive.mecanum.setMecanum(Math.toRadians(270), .3, PIDrotationOut, 1.0);
 
-                    } else {
+                            } else {
 
-                        robotHandler.drive.stop();
+                                robotHandler.drive.stop();
 
 //                        robotHandler.drive.mecanum.setMecanum(Math.toRadians(270), 0.4, PIDrotationOut, 1.0);
 
 
-                        if (wait.milliseconds() % 1500 > 750) {
+                                if (wait.milliseconds() % 1500 > 750) {
 
-                            motorCollectRight.setPower(0.7);
+                                    motorCollectRight.setPower(0.7);
 
-                            motorCollectLeft.setPower(0.7);
+                                    motorCollectLeft.setPower(0.7);
+
+                                } else {
+
+                                    motorCollectRight.setPower(1.0);
+
+                                    motorCollectLeft.setPower(-1.0);
+
+                                }
+
+                            }
 
                         } else {
 
-                            motorCollectRight.setPower(1.0);
+                            if (wait.milliseconds() > 2000) {
 
-                            motorCollectLeft.setPower(-1.0);
+                                robotHandler.drive.mecanum.setMecanum(Math.toRadians(270), 0.3, PIDrotationOut, 1.0);
 
-                        }
+                                motorCollectRight.setPower(0.7);
 
-                    }
+                                motorCollectLeft.setPower(0.7);
 
-                } else {
+                                if (wait.milliseconds() > 2500) {
 
-                    if (wait.milliseconds() > 2000) {
+                                    wait.reset();
 
-                        robotHandler.drive.mecanum.setMecanum(Math.toRadians(270), 0.3, PIDrotationOut, 1.0);
+                                }
 
-                        motorCollectRight.setPower(0.7);
-
-                        motorCollectLeft.setPower(0.7);
-
-                        if (wait.milliseconds() > 2500) {
-
-                            wait.reset();
-
-                        }
-
-                    } else {
-
-                        if (driveRPM.milliseconds() > 100) {
-                            driveRPM.reset();
-                            double dist = getTraveledEncoderTicks() - travelDist;
-                            travelDist = getTraveledEncoderTicks();
-                            if (Math.abs(dist) < 10) {
-                                speedUp = true;
                             } else {
-                                speedUp = false;
+
+                                if (driveRPM.milliseconds() > 100) {
+                                    driveRPM.reset();
+                                    double dist = getTraveledEncoderTicks() - travelDist;
+                                    travelDist = getTraveledEncoderTicks();
+                                    if (Math.abs(dist) < 10) {
+                                        speedUp = true;
+                                    } else {
+                                        speedUp = false;
+                                    }
+                                }
+                                motorCollectLeft.setPower(-1.0);
+
+                                motorCollectRight.setPower(1.0);
+
+
+                                robotHandler.drive.mecanum.setMecanum(Math.toRadians(90), (speedUp) ? 1 : 0.3, PIDrotationOut, 1.0);
+
                             }
+
+                            firstReset = true;
+
                         }
-                        motorCollectLeft.setPower(-1.0);
 
-                        motorCollectRight.setPower(1.0);
-
-
-                        robotHandler.drive.mecanum.setMecanum(Math.toRadians(90), (speedUp) ? 1 : 0.3, PIDrotationOut, 1.0);
-
-                    }
-
-                    firstReset = true;
-
-                }
-
-                telemetry.addData("Traveled", getTraveledEncoderTicks() - travelDist);
+                        telemetry.addData("Traveled", getTraveledEncoderTicks() - travelDist);
 
 
 //                    if (wait.milliseconds() > WorldConstants.auto.aligning.collectDriveIntoPitTime || opticalGlyph.getLightDetected() > 0.0){
@@ -989,198 +990,922 @@ public class WorldAuto extends WorldConfig {
 //                    }
 
 
-                break;
+                        break;
 
-            case COLLECTFINISHCOLLECTING:
+                    case COLLECTFINISHCOLLECTING:
 
-                trackBack = getTraveledEncoderTicks();
+                        trackBack = getTraveledEncoderTicks();
 
-                resetEncoders();
+                        resetEncoders();
 
-                auto = AutoEnum.COLLECTRETRACESTEPS;
+                        auto = AutoEnum.COLLECTRETRACESTEPS;
 
-                servoFlipL.setPosition(WorldConstants.flip.leftFlatAuto);
+                        servoFlipL.setPosition(WorldConstants.flip.leftFlatAuto);
 
-                servoFlipR.setPosition(WorldConstants.flip.rightFlatAuto);
-
-
-                wait.reset();
-
-                break;
-
-            case COLLECTRETRACESTEPS:
+                        servoFlipR.setPosition(WorldConstants.flip.rightFlatAuto);
 
 
-                if (traveledEncoderTicks(trackBack - WorldConstants.drive.countsPerInches(WorldConstants.auto.aligning.GlyphDistanceToCrypto))) {
+                        wait.reset();
 
-                    robotHandler.drive.mecanum.setMecanum(Math.toRadians(90), .1, PIDrotationOut, 1.0);
-                    if (firstGlyph) {
-                        auto = AutoEnum.ALIGNDRIVEINTOCRYPTO;
-                        firstGlyph = false;
+                        break;
 
-                    } else {
-                        auto = AutoEnum.CHANGESETPOINT;
-                    }
-
-                    resetEncoders();
-
-                    botGlyph = getGlyph();
-
-                    motorCollectRight.setPower(0);
-
-                    motorCollectLeft.setPower(0);
-
-                } else if (traveledEncoderTicks(trackBack - WorldConstants.drive.countsPerInches(WorldConstants.auto.aligning.GlyphDistanceToCrypto + 6))) {
-
-                    robotHandler.drive.mecanum.setMecanum(Math.toRadians(270), .5, PIDrotationOut, 1.0);
-
-                    motorCollectRight.setPower(-1.0);
-
-                    motorCollectLeft.setPower(1.0);
-
-                    servoFlipL.setPosition(WorldConstants.flip.leftFlat);
-
-                    servoFlipR.setPosition(WorldConstants.flip.rightFlat);
+                    case COLLECTRETRACESTEPS:
 
 
-                } else {
+                        if (traveledEncoderTicks(trackBack - WorldConstants.drive.countsPerInches(WorldConstants.auto.aligning.GlyphDistanceToCrypto))) {
 
-                    robotHandler.drive.mecanum.setMecanum(Math.toRadians(270), 1.0, PIDrotationOut, 1.0);
+                            robotHandler.drive.mecanum.setMecanum(Math.toRadians(90), .1, PIDrotationOut, 1.0);
+                            if (firstGlyph) {
+                                auto = AutoEnum.ALIGNDRIVEINTOCRYPTO;
+                                firstGlyph = false;
 
-                }
+                            } else {
+                                auto = AutoEnum.CHANGESETPOINT;
+                            }
 
-                break;
+                            resetEncoders();
 
-            case CHANGESETPOINT:
+                            botGlyph = getGlyph();
 
-                robotHandler.drive.stop();
+                            motorCollectRight.setPower(0);
 
-                previousColumn = targetColumn;
+                            motorCollectLeft.setPower(0);
+
+                        } else if (traveledEncoderTicks(trackBack - WorldConstants.drive.countsPerInches(WorldConstants.auto.aligning.GlyphDistanceToCrypto + 6))) {
+
+                            robotHandler.drive.mecanum.setMecanum(Math.toRadians(270), .5, PIDrotationOut, 1.0);
+
+                            motorCollectRight.setPower(-1.0);
+
+                            motorCollectLeft.setPower(1.0);
+
+                            servoFlipL.setPosition(WorldConstants.flip.leftFlat);
+
+                            servoFlipR.setPosition(WorldConstants.flip.rightFlat);
+
+
+                        } else {
+
+                            robotHandler.drive.mecanum.setMecanum(Math.toRadians(270), 1.0, PIDrotationOut, 1.0);
+
+                        }
+
+                        break;
+
+                    case CHANGESETPOINT:
+
+                        robotHandler.drive.stop();
+
+                        previousColumn = targetColumn;
 
 //                targetColumn = getColumn(botGlyph, topGlyph);
 
 
-                targetColumn = (previousColumn == keyColumn) ? ((previousColumn == RelicRecoveryVuMark.LEFT || previousColumn == RelicRecoveryVuMark.RIGHT) ? RelicRecoveryVuMark.CENTER : RelicRecoveryVuMark.LEFT) : ((previousColumn == RelicRecoveryVuMark.LEFT) ? (RelicRecoveryVuMark.RIGHT) : ((previousColumn == RelicRecoveryVuMark.CENTER) ? ((keyColumn == RelicRecoveryVuMark.LEFT) ? RelicRecoveryVuMark.RIGHT : RelicRecoveryVuMark.LEFT) : RelicRecoveryVuMark.RIGHT));
+                        targetColumn = (previousColumn == keyColumn) ? ((previousColumn == RelicRecoveryVuMark.LEFT || previousColumn == RelicRecoveryVuMark.RIGHT) ? RelicRecoveryVuMark.CENTER : RelicRecoveryVuMark.LEFT) : ((previousColumn == RelicRecoveryVuMark.LEFT) ? (RelicRecoveryVuMark.RIGHT) : ((previousColumn == RelicRecoveryVuMark.CENTER) ? ((keyColumn == RelicRecoveryVuMark.LEFT) ? RelicRecoveryVuMark.RIGHT : RelicRecoveryVuMark.LEFT) : RelicRecoveryVuMark.RIGHT));
 
-                if (numbCol == 2) {
+                        if (numbCol == 2) {
 
-                    targetColumn = previousColumn;
+                            targetColumn = previousColumn;
+
+                        }
+
+                        numbCol++;
+                        firstGlyph = false;
+
+
+                        columnNumber = columnNumber(targetColumn);
+
+                        int alignment;
+
+                        double previousColumnNumber = columnNumber(previousColumn);
+
+                        distance = (columnNumber - previousColumnNumber) * WorldConstants.auto.aligning.columnStraffDistance;
+
+                        alignment = (columnNumber == 0) ? 0 : (columnNumber == 2) ? 1 : (BOX[0][0] == NONE) ? 0 : 1;
+
+                        distance += (alignment == 1) ? WorldConstants.auto.aligning.alignStraffDistance : -WorldConstants.auto.aligning.alignStraffDistance;
+
+                        if (distance > 0) {
+
+                            direction = 180;
+
+                        } else if (distance < 0) {
+
+                            direction = 0;
+
+                        }
+
+                        servoAlignRight.setPosition((alignment == 0) ? WorldConstants.alignment.ALIGNRIGHTDOWN : WorldConstants.alignment.ALIGNRIGHTUP);
+
+                        servoAlignLeft.setPosition((alignment == 1) ? WorldConstants.alignment.ALIGNLEFTDOWN : WorldConstants.alignment.ALIGNLEFTUP);
+
+                        usingRightArm = (alignment == 0) ? true : false;
+
+                        distance = Math.abs(distance);
+
+
+                        resetEncoders();
+
+                        auto = AutoEnum.COLLECTPROCESSFORPLACING;
+
+                        break;
+
+                    case COLLECTPROCESSFORPLACING:
+
+                        if (BOX[0][columnNumber] == NONE) {
+
+                        } else if (BOX[1][columnNumber] == NONE) {
+
+                            lift = 1;
+
+                        } else {
+
+                            lift = 2;
+
+                        }
+
+
+                        robotHandler.drive.mecanum.setMecanum(Math.toRadians(direction), 1.0, PIDrotationOut, 1.0);
+
+                        if (traveledEncoderTicks(WorldConstants.drive.countsPerInches(distance))) {// || wait.milliseconds() > 5000) {
+
+                            robotHandler.drive.stop();
+
+                            wait.reset();
+
+                            auto = AutoEnum.ALIGNDRIVEINTOCRYPTO;
+
+                        }
+
+
+                        break;
+
 
                 }
 
-                numbCol++;
-                firstGlyph = false;
+
+                if (lift == 0) {
+
+                    if (motorLift.getEncoderPosition() > -30) {
+
+                        motorLift.setPower(0);
+
+                    } else {
+
+                        motorLift.setPower(1);
+
+                    }
+
+                } else if (lift == 1) {
+
+                    if (Math.abs(motorLift.getEncoderPosition()) > 2000) {
+
+                        motorLift.setPower(0);
+
+                    } else {
+
+                        motorLift.setPower(-1);
+
+                    }
+
+                } else if (lift == 2) {
+
+                    if (Math.abs(motorLift.getEncoderPosition()) > 3500) {
+
+                        motorLift.setPower(0);
+
+                    } else {
+
+                        motorLift.setPower(-1);
+
+                    }
+
+                }
+            case BACK:
+                switch (auto) {
+
+                    case WAIT:
+
+                        if (!switchDelayEnabled || wait.seconds() >= slideDelay) {
+
+                            auto = AutoEnum.JEWELS;
+
+                        }
+
+                        break;
+
+                    case JEWELS:
+
+                        if (!switchJewels) {
+
+                            auto = AutoEnum.ALIGN;
+
+                        } else {
+
+                            auto = AutoEnum.JEWELDOWN;
+
+                            wait.reset();
+
+                        }
+
+                        break;
+
+                    case JEWELDOWN:
+
+                        servoJewelHit.setPosition(WorldConstants.auto.jewel.JEWELHITCENTER);
 
 
-                columnNumber = columnNumber(targetColumn);
+                        if (wait.milliseconds() > 200) {
 
-                int alignment;
+                            servoJewel.setPosition(WorldConstants.auto.jewel.JEWELDOWN);
 
-                double previousColumnNumber = columnNumber(previousColumn);
 
-                distance = (columnNumber - previousColumnNumber) * WorldConstants.auto.aligning.columnStraffDistance;
+                            if (wait.milliseconds() > 700) {
 
-                alignment = (columnNumber == 0) ? 0 : (columnNumber == 2) ? 1 : (BOX[0][0] == NONE) ? 0 : 1;
+                                auto = AutoEnum.JEWELHIT;
 
-                distance += (alignment == 1) ? WorldConstants.auto.aligning.alignStraffDistance : -WorldConstants.auto.aligning.alignStraffDistance;
+                                wait.reset();
 
-                if (distance > 0) {
+                            }
 
-                    direction = 180;
+                        }
 
-                } else if (distance < 0) {
+                        jewelCSLEDON();
 
-                    direction = 0;
+                        break;
+
+                    case JEWELHIT:
+
+                        if (wait.milliseconds() > jewelHit()) {
+
+                            auto = AutoEnum.JEWELUP;
+
+                            wait.reset();
+
+                        }
+
+                        break;
+
+                    case JEWELUP:
+                        servoJewel.setPosition(WorldConstants.auto.jewel.JEWELUP);
+                        if (wait.milliseconds() > 400) {
+
+                            auto = AutoEnum.ALIGN;
+
+                            wait.reset();
+
+                            servoJewelHit.setPosition(0.5);
+
+                        }
+
+
+                        break;
+
+                    case ALIGN:
+
+
+                        auto = AutoEnum.KEYCOLUMNSET;
+
+                        break;
+
+                    case KEYCOLUMNSET:
+
+                        if (keyColumn != RelicRecoveryVuMark.UNKNOWN) {
+
+                            targetColumn = keyColumn;
+
+
+                        }
+
+
+                        columnNumber = columnNumber(targetColumn);
+
+                        auto = AutoEnum.ALIGNDRIVEOFFPLATFORM;
+
+                        resetEncoders();
+
+                        servoJewelHit.setPosition(WorldConstants.auto.jewel.JEWELHITLEFT);
+
+                        break;
+
+//            case ALIGNDRIVEOFFPLATFORM: DOES NOT DRIVE STRAIGHT
+
+//
+
+//                if(traveledEncoderTicks(WorldConstants.drive.countsPerInches(WorldConstants.auto.aligning.AlignDivingOffPlatformEncoderTillTurn[colorPositionInt][columnNumber]))) {
+
+//                    servoAlignRight.setPosition(WorldConstants.auto.aligning.AlignArmPosition[colorPositionInt][0][columnNumber]);
+
+//                    servoAlignLeft.setPosition(WorldConstants.auto.aligning.AlignArmPosition[colorPositionInt][1][columnNumber]);
+
+//                    usingRightArm = WorldConstants.auto.aligning.AlignSwitchClicked[colorPositionInt][0][columnNumber];
+
+//                    boolean encoderFinished = traveledEncoderTicks(WorldConstants.drive.countsPerInches(WorldConstants.auto.aligning.AlignDrivingOffPlatformEncoder[colorPositionInt][columnNumber]));
+
+//                    double speed = (encoderFinished) ? 0: 1.0;
+
+//                    robotHandler.drive.mecanum.setMecanumThridPerson(Math.toRadians(WorldConstants.auto.aligning.AlignDriveOffPlatformDirection[colorPositionInt]), speed, -PIDT.getOutput(gyro, -90), 1.0, Math.toRadians(gyro));//gyro
+
+//                    if(PIDonTarget && encoderFinished){
+
+//                        robotHandler.drive.stop();
+
+//                        auto = AutoEnum.ALIGNDRIVEINTOCRYPTO;
+
+//                        wait.reset();
+
+//                        PID.reset();
+
+//                    }
+
+//                } else {
+
+//                    robotHandler.drive.mecanum.setMecanum(Math.toRadians(WorldConstants.auto.aligning.AlignDriveOffPlatformDirection[colorPositionInt]), 1, PIDrotationOut, 1.0);
+
+//
+
+//                }
+
+//                //may add PIDontarget
+
+//
+
+//
+
+//
+
+//                break;
+
+                    case ALIGNDRIVEOFFPLATFORM:
+
+                        servoJewelHit.setPosition(WorldConstants.auto.jewel.JEWELHITLEFT);
+
+                        robotHandler.drive.mecanum.setMecanum(Math.toRadians(WorldConstants.auto.aligning.AlignDriveOffPlatformDirection[colorPositionInt]), 1, PIDrotationOut, 1.0);
+
+                        if (traveledEncoderTicks(WorldConstants.drive.countsPerInches(WorldConstants.auto.aligning.AlignDrivingOffPlatformEncoder[colorPositionInt][columnNumber]))) {
+
+                            robotHandler.drive.stop();
+
+                            PID.reset();
+
+                            auto = WorldAuto.AutoEnum.ALIGNTURN;
+
+                        }
+
+                        break;
+
+                    case ALIGNTURN:
+
+//                        robotHandler.drive.mecanum.setMecanum(0.0, 0.0, PIDrotationOut, 1.0);
+
+                        servoAlignRight.setPosition(WorldConstants.auto.aligning.AlignArmPosition[colorPositionInt][0][columnNumber]);
+
+                        servoAlignLeft.setPosition(WorldConstants.auto.aligning.AlignArmPosition[colorPositionInt][1][columnNumber]);
+
+                        usingRightArm = WorldConstants.auto.aligning.AlignSwitchClicked[colorPositionInt][0][columnNumber];
+
+//                        if (PIDonTarget) {
+//
+//                            robotHandler.drive.stop();
+
+                        auto = AutoEnum.COLLECT;
+
+                        wait.reset();
+
+//                    switchPID = false;
+
+//                            PIDrotationOut = 0;
+
+//                        }
+
+                        break;
+                    case ALIGNDRIVEINTOCRYPTO:
+
+
+                        robotHandler.drive.mecanum.setMecanum(Math.toRadians(270), .3, PIDrotationOut, 1.0);
+
+                        if ((limitRightBack.getState() && usingRightArm) || (limitLeftBack.getState() && !usingRightArm)) {
+
+                            robotHandler.drive.stop();
+
+                            auto = AutoEnum.GLYPH;
+
+                            motorCollectRight.setPower(0);
+
+                            motorCollectLeft.setPower(0);
+
+                        } else if (wait.milliseconds() > 3000) {
+                            robotHandler.drive.stop();
+
+                            auto = AutoEnum.GLYPHPLACE;
+
+                            motorCollectRight.setPower(0);
+
+                            motorCollectLeft.setPower(0);
+
+                        }
+
+                        break;
+
+                    case GLYPH:
+
+                        auto = AutoEnum.GLYPHSTRAFFTOALIGN;
+                        motorCollectRight.setPower(1.0);
+
+                        motorCollectLeft.setPower(-1.0);
+
+                        wait.reset();
+
+                        break;
+
+                    case GLYPHSTRAFFTOALIGN:
+
+                        switchPID = true;
+
+                        robotHandler.drive.mecanum.setMecanum(Math.toRadians((usingRightArm) ? 180 : 0), .7, PIDrotationOut, 1.0);
+
+                        if ((limitRightSide.getState() && usingRightArm) || (limitLeftSide.getState() && !usingRightArm) || wait.milliseconds() > 3000) {
+
+                            robotHandler.drive.stop();
+
+                            auto = AutoEnum.GLYPHPLACE;
+
+//                        robotHandler.drive.mecanum.setMecanum(Math.toRadians(90), 0.4, PIDrotationOut, 1.0);
+
+//                    robotHandler.drive.mecanum.setMecanum(Math.toRadians((usingRightArm) ? 0 : 180), 0.6, PIDrotationOut, 1.0);
+                            robotHandler.drive.mecanum.setMecanum(Math.toRadians(90), 0.6, PIDrotationOut, 1.0);
+                            wait.reset();
+
+                        }
+
+                        break;
+
+
+                    case GLYPHPLACE:
+
+
+                        robotHandler.drive.mecanum.setMecanum(0, 0, PIDrotationOut, 1.0);
+
+
+                        servoFlipL.setPosition(WorldConstants.flip.leftUp);
+
+                        servoFlipR.setPosition(WorldConstants.flip.rightUp);
+
+                        servoAlignLeft.setPosition(WorldConstants.alignment.ALIGNLEFTUP);
+
+                        servoAlignRight.setPosition(WorldConstants.alignment.ALIGNRIGHTUP);
+
+                        if (wait.milliseconds() > 500) {
+
+                            //addGlyphsToColumn(COLUMN, FIRST GLYPH COLOR, SECOND GLYPH COLOR);
+
+                            addGlyphsToColumn(targetColumn, botGlyph, topGlyph);
+
+
+                            auto = AutoEnum.GLYPHINTOBOX;
+
+                            wait.reset();
+
+                        }
+
+                        break;
+
+                    case GLYPHINTOBOX:
+
+                        robotHandler.drive.mecanum.setMecanum(Math.toRadians(270), 0.5, PIDrotationOut, 1.0);
+
+                        if (wait.milliseconds() > 500) {
+
+                            //addGlyphsToColumn(COLUMN, FIRST GLYPH COLOR, SECOND GLYPH COLOR);
+
+                            robotHandler.drive.mecanum.setMecanum(Math.toRadians(90), 1.0, PIDrotationOut, 1.0);
+
+                            auto = AutoEnum.GLYPHPLACERESET;
+
+                            wait.reset();
+
+                        }
+
+                        break;
+
+                    case GLYPHPLACERESET:
+
+                        lift = 0;
+
+                        robotHandler.drive.stop();
+
+                        servoFlipL.setPosition(WorldConstants.flip.leftDown);
+
+                        servoFlipR.setPosition(WorldConstants.flip.rightDown);
+
+                        auto = AutoEnum.COLLECT;
+
+                        break;
+
+                    case COLLECT:
+//                switchPID = false;
+
+                        resetEncoders();
+
+
+                        auto = AutoEnum.COLLECTGOTOPIT;
+
+                        motorCollectRight.setPower(1.0);
+
+                        motorCollectLeft.setPower(-1.0);
+
+
+                        if (autoTime.milliseconds() > 25000)
+                            auto = AutoEnum.COLLECTDRIVEBACKFROMCRYPTO;
+
+                        break;
+
+                    case COLLECTDRIVEBACKFROMCRYPTO:
+
+                        break;
+
+                    case COLLECTSTRAFFTOCENTER:
+                        robotHandler.drive.mecanum.setMecanum(Math.toRadians(WorldConstants.auto.aligning.backAutoStrafeDirection[colorPositionInt]),0.6, PIDrotationOut, 1.0);
+                        if(traveledEncoderTicks(Constants.drive.countsPerInches())){
+
+                        }
+                        break;
+
+                    case COLLECTSTARTTRACKING:
+
+                        break;
+
+                    case COLLECTGOTOPIT:
+
+                        robotHandler.drive.mecanum.setMecanum(Math.toRadians((numbCol >= 1) ? ((keyColumn == RelicRecoveryVuMark.RIGHT) ? 50 : 130) : 90), 1.0, PIDrotationOut, 1.0);
+
+                        if (traveledEncoderTicks(WorldConstants.drive.countsPerInches(WorldConstants.auto.aligning.CollectDistToPit))) {
+
+                            robotHandler.drive.stop();
+
+                            wait.reset();
+
+                            auto = AutoEnum.COLLECTGLYPHS;
+
+                            servoFlipL.setPosition(WorldConstants.flip.leftDown);
+
+                            servoFlipR.setPosition(WorldConstants.flip.rightDown);
+
+                            oneGlyphCollected = 0;
+
+                            firstReset = true;
+
+//                    if (numbCol==0){
+
+//                        TARGETANGLE+=10;
+
+//                    }
+
+
+                        }
+
+                        break;
+
+                    case COLLECTGLYPHS:
+
+//                PIDrotationOut = 0;
+////                     if (RPM<0) {
+
+////                        x++;
+
+////
+
+////                     }
+
+////                    if (x>1) {
+
+////                        x--;
+
+////                        motorCollectRight.setPower(-1.0);
+
+////                        motorCollectLeft.setPower(1.0);
+
+////                    }
+
+                        if (traveledEncoderTicks(WorldConstants.drive.countsPerInches(60)) || autoTime.milliseconds() > 25000) {
+
+                            robotHandler.drive.stop();
+
+                            auto = AutoEnum.COLLECTFINISHCOLLECTING;
+
+                            wait.reset();
+
+                            topGlyph = getGlyph();
+
+                        } else if (motorLift.getEncoderPosition() > -30 && glyphDist.getDistance(DistanceUnit.CM) < 20 && glyphDist.getDistance(DistanceUnit.CM) > 5) {
+
+                            robotHandler.drive.stop();
+
+
+                            auto = AutoEnum.COLLECTFINISHCOLLECTING;//TODO CHANGE BACK
+
+                            wait.reset();
+
+                            topGlyph = getGlyph();
+
+//                } else if((glyphColor.red() + glyphColor.green() + glyphColor.blue())/3.0 > 0){
+
+//                    if(oneGlyphCollected == 0) {
+
+//                        wait.reset();
+
+//                        oneGlyphCollected = 1;
+
+//                    }
+
+                        } else if (opticalGlyph.getLightDetected() > .23) {
+
+                            if (firstReset) {
+
+                                wait.reset();
+
+                                firstReset = false;
+
+                            }
+
+                            if (wait.milliseconds() < 500) {
+
+//                        TARGETANGLE=90;
+
+                                robotHandler.drive.mecanum.setMecanum(Math.toRadians(270), .3, PIDrotationOut, 1.0);
+
+                            } else {
+
+                                robotHandler.drive.stop();
+
+//                        robotHandler.drive.mecanum.setMecanum(Math.toRadians(270), 0.4, PIDrotationOut, 1.0);
+
+
+                                if (wait.milliseconds() % 1500 > 750) {
+
+                                    motorCollectRight.setPower(0.7);
+
+                                    motorCollectLeft.setPower(0.7);
+
+                                } else {
+
+                                    motorCollectRight.setPower(1.0);
+
+                                    motorCollectLeft.setPower(-1.0);
+
+                                }
+
+                            }
+
+                        } else {
+
+                            if (wait.milliseconds() > 2000) {
+
+                                robotHandler.drive.mecanum.setMecanum(Math.toRadians(270), 0.3, PIDrotationOut, 1.0);
+
+                                motorCollectRight.setPower(0.7);
+
+                                motorCollectLeft.setPower(0.7);
+
+                                if (wait.milliseconds() > 2500) {
+
+                                    wait.reset();
+
+                                }
+
+                            } else {
+
+                                if (driveRPM.milliseconds() > 100) {
+                                    driveRPM.reset();
+                                    double dist = getTraveledEncoderTicks() - travelDist;
+                                    travelDist = getTraveledEncoderTicks();
+                                    if (Math.abs(dist) < 10) {
+                                        speedUp = true;
+                                    } else {
+                                        speedUp = false;
+                                    }
+                                }
+                                motorCollectLeft.setPower(-1.0);
+
+                                motorCollectRight.setPower(1.0);
+
+
+                                robotHandler.drive.mecanum.setMecanum(Math.toRadians(90), (speedUp) ? 1 : 0.3, PIDrotationOut, 1.0);
+
+                            }
+
+                            firstReset = true;
+
+                        }
+
+                        telemetry.addData("Traveled", getTraveledEncoderTicks() - travelDist);
+
+
+//                    if (wait.milliseconds() > WorldConstants.auto.aligning.collectDriveIntoPitTime || opticalGlyph.getLightDetected() > 0.0){
+
+//                        robotHandler.drive.stop();
+
+//                        auto = AutoEnum.COLLECTFINISHCOLLECTING;
+
+//                        wait.reset();
+
+//                        topGlyph = getGlyph();
+
+//                    }
+
+
+                        break;
+
+                    case COLLECTFINISHCOLLECTING:
+
+                        trackBack = getTraveledEncoderTicks();
+
+                        resetEncoders();
+
+                        auto = AutoEnum.COLLECTRETRACESTEPS;
+
+                        servoFlipL.setPosition(WorldConstants.flip.leftFlatAuto);
+
+                        servoFlipR.setPosition(WorldConstants.flip.rightFlatAuto);
+
+
+                        wait.reset();
+
+                        break;
+
+                    case COLLECTRETRACESTEPS:
+
+
+                        if (traveledEncoderTicks(trackBack - WorldConstants.drive.countsPerInches(WorldConstants.auto.aligning.GlyphDistanceToCrypto))) {
+
+                            robotHandler.drive.mecanum.setMecanum(Math.toRadians(90), .1, PIDrotationOut, 1.0);
+                            if (firstGlyph) {
+                                auto = AutoEnum.ALIGNDRIVEINTOCRYPTO;
+                                firstGlyph = false;
+
+                            } else {
+                                auto = AutoEnum.CHANGESETPOINT;
+                            }
+
+                            resetEncoders();
+
+                            botGlyph = getGlyph();
+
+                            motorCollectRight.setPower(0);
+
+                            motorCollectLeft.setPower(0);
+
+                        } else if (traveledEncoderTicks(trackBack - WorldConstants.drive.countsPerInches(WorldConstants.auto.aligning.GlyphDistanceToCrypto + 6))) {
+
+                            robotHandler.drive.mecanum.setMecanum(Math.toRadians(270), .5, PIDrotationOut, 1.0);
+
+                            motorCollectRight.setPower(-1.0);
+
+                            motorCollectLeft.setPower(1.0);
+
+                            servoFlipL.setPosition(WorldConstants.flip.leftFlat);
+
+                            servoFlipR.setPosition(WorldConstants.flip.rightFlat);
+
+
+                        } else {
+
+                            robotHandler.drive.mecanum.setMecanum(Math.toRadians(270), 1.0, PIDrotationOut, 1.0);
+
+                        }
+
+                        break;
+
+                    case CHANGESETPOINT:
+
+                        robotHandler.drive.stop();
+
+                        previousColumn = targetColumn;
+
+//                targetColumn = getColumn(botGlyph, topGlyph);
+
+
+                        targetColumn = (previousColumn == keyColumn) ? ((previousColumn == RelicRecoveryVuMark.LEFT || previousColumn == RelicRecoveryVuMark.RIGHT) ? RelicRecoveryVuMark.CENTER : RelicRecoveryVuMark.LEFT) : ((previousColumn == RelicRecoveryVuMark.LEFT) ? (RelicRecoveryVuMark.RIGHT) : ((previousColumn == RelicRecoveryVuMark.CENTER) ? ((keyColumn == RelicRecoveryVuMark.LEFT) ? RelicRecoveryVuMark.RIGHT : RelicRecoveryVuMark.LEFT) : RelicRecoveryVuMark.RIGHT));
+
+                        if (numbCol == 2) {
+
+                            targetColumn = previousColumn;
+
+                        }
+
+                        numbCol++;
+                        firstGlyph = false;
+
+
+                        columnNumber = columnNumber(targetColumn);
+
+                        int alignment;
+
+                        double previousColumnNumber = columnNumber(previousColumn);
+
+                        distance = (columnNumber - previousColumnNumber) * WorldConstants.auto.aligning.columnStraffDistance;
+
+                        alignment = (columnNumber == 0) ? 0 : (columnNumber == 2) ? 1 : (BOX[0][0] == NONE) ? 0 : 1;
+
+                        distance += (alignment == 1) ? WorldConstants.auto.aligning.alignStraffDistance : -WorldConstants.auto.aligning.alignStraffDistance;
+
+                        if (distance > 0) {
+
+                            direction = 180;
+
+                        } else if (distance < 0) {
+
+                            direction = 0;
+
+                        }
+
+                        servoAlignRight.setPosition((alignment == 0) ? WorldConstants.alignment.ALIGNRIGHTDOWN : WorldConstants.alignment.ALIGNRIGHTUP);
+
+                        servoAlignLeft.setPosition((alignment == 1) ? WorldConstants.alignment.ALIGNLEFTDOWN : WorldConstants.alignment.ALIGNLEFTUP);
+
+                        usingRightArm = (alignment == 0) ? true : false;
+
+                        distance = Math.abs(distance);
+
+
+                        resetEncoders();
+
+                        auto = AutoEnum.COLLECTPROCESSFORPLACING;
+
+                        break;
+
+                    case COLLECTPROCESSFORPLACING:
+
+                        if (BOX[0][columnNumber] == NONE) {
+
+                        } else if (BOX[1][columnNumber] == NONE) {
+
+                            lift = 1;
+
+                        } else {
+
+                            lift = 2;
+
+                        }
+
+
+                        robotHandler.drive.mecanum.setMecanum(Math.toRadians(direction), 1.0, PIDrotationOut, 1.0);
+
+                        if (traveledEncoderTicks(WorldConstants.drive.countsPerInches(distance))) {// || wait.milliseconds() > 5000) {
+
+                            robotHandler.drive.stop();
+
+                            wait.reset();
+
+                            auto = AutoEnum.ALIGNDRIVEINTOCRYPTO;
+
+                        }
+
+
+                        break;
+
 
                 }
 
-                servoAlignRight.setPosition((alignment == 0) ? WorldConstants.alignment.ALIGNRIGHTDOWN : WorldConstants.alignment.ALIGNRIGHTUP);
 
-                servoAlignLeft.setPosition((alignment == 1) ? WorldConstants.alignment.ALIGNLEFTDOWN : WorldConstants.alignment.ALIGNLEFTUP);
+                if (lift == 0) {
 
-                usingRightArm = (alignment == 0) ? true : false;
+                    if (motorLift.getEncoderPosition() > -30) {
 
-                distance = Math.abs(distance);
+                        motorLift.setPower(0);
 
+                    } else {
 
-                resetEncoders();
+                        motorLift.setPower(1);
 
-                auto = AutoEnum.COLLECTPROCESSFORPLACING;
+                    }
 
-                break;
+                } else if (lift == 1) {
 
-            case COLLECTPROCESSFORPLACING:
+                    if (Math.abs(motorLift.getEncoderPosition()) > 2000) {
 
-                if (BOX[0][columnNumber] == NONE) {
+                        motorLift.setPower(0);
 
-                } else if (BOX[1][columnNumber] == NONE) {
+                    } else {
 
-                    lift = 1;
+                        motorLift.setPower(-1);
 
-                } else {
+                    }
 
-                    lift = 2;
+                } else if (lift == 2) {
 
-                }
+                    if (Math.abs(motorLift.getEncoderPosition()) > 3500) {
 
+                        motorLift.setPower(0);
 
-                robotHandler.drive.mecanum.setMecanum(Math.toRadians(direction), 1.0, PIDrotationOut, 1.0);
+                    } else {
 
-                if (traveledEncoderTicks(WorldConstants.drive.countsPerInches(distance))) {// || wait.milliseconds() > 5000) {
+                        motorLift.setPower(-1);
 
-                    robotHandler.drive.stop();
-
-                    wait.reset();
-
-                    auto = AutoEnum.ALIGNDRIVEINTOCRYPTO;
+                    }
 
                 }
-
-
-                break;
-
-
         }
-
-
-        if (lift == 0) {
-
-            if (motorLift.getEncoderPosition() > -30) {
-
-                motorLift.setPower(0);
-
-            } else {
-
-                motorLift.setPower(1);
-
-            }
-
-        } else if (lift == 1) {
-
-            if (Math.abs(motorLift.getEncoderPosition()) > 2000) {
-
-                motorLift.setPower(0);
-
-            } else {
-
-                motorLift.setPower(-1);
-
-            }
-
-        } else if (lift == 2) {
-
-            if (Math.abs(motorLift.getEncoderPosition()) > 3500) {
-
-                motorLift.setPower(0);
-
-            } else {
-
-                motorLift.setPower(-1);
-
-            }
-
-        }
-
 
         telemetry.addData("Glyph", getGlyph());
 
