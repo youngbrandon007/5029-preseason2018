@@ -144,19 +144,28 @@ public class WorldConstants {
             public static final double[][] AlignDrivingOffPlatformEncoder =
                     {
                             {33 , 24, 28},
-                            {0,0,0}
+                            {0,0,0},
+                            {20, 20, 20},
+                            {20, 20, 20}
                     };
             public static final double[][]AlignDivingOffPlatformEncoderTillTurn =
                     {
                             {5, 5, 5}//10
                     };
             public static final double[] AlignDriveOffPlatformDirection =
-                    {270, 90};
+                    {270, 90,270,90};
             public static final double[] AlignTurnAngle =
                     {0,0,-90, -90};
 
             public static final double[] backAutoStrafeDirection =
-                    {0,180};
+                    {0,0,0,180};
+            public static final double[][] backAutoStrafeDistance =
+                    {
+                            {},
+                            {},
+                            {20,15,10},
+                            {10,15,30}
+                    };
             public static final double CollectDistToPit = 10;
             public static final int collectDriveIntoPitTime = 2000;
             public static final double GlyphDistanceToCrypto = 18;

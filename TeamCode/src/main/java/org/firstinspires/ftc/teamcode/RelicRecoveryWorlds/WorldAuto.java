@@ -1349,6 +1349,7 @@ public class WorldAuto extends WorldConfig {
                             PID.reset();
 
                             auto = WorldAuto.AutoEnum.ALIGNTURN;
+                            resetEncoders();
 
                         }
 
@@ -1358,20 +1359,22 @@ public class WorldAuto extends WorldConfig {
 
 //                        robotHandler.drive.mecanum.setMecanum(0.0, 0.0, PIDrotationOut, 1.0);
 
-                        servoAlignRight.setPosition(WorldConstants.auto.aligning.AlignArmPosition[colorPositionInt][0][columnNumber]);
+                        robotHandler.drive.mecanum.setMecanum((colorPositionInt == 3) ? 0 : 180, .5, PIDrotationOut, 1.0);
+                        if (traveledEncoderTicks(WorldConstants.drive.countsPerInches(WorldConstants.auto.aligning.backAutoStrafeDistance[colorPositionInt][columnNumber]))) {
+                            servoAlignRight.setPosition((colorPositionInt == 3) ? WorldConstants.alignment.ALIGNRIGHTUP : WorldConstants.alignment.ALIGNRIGHTDOWN);
 
-                        servoAlignLeft.setPosition(WorldConstants.auto.aligning.AlignArmPosition[colorPositionInt][1][columnNumber]);
+                            servoAlignLeft.setPosition((colorPositionInt == 3) ? WorldConstants.alignment.ALIGNLEFTDOWN : WorldConstants.alignment.ALIGNLEFTUP);
 
-                        usingRightArm = WorldConstants.auto.aligning.AlignSwitchClicked[colorPositionInt][0][columnNumber];
+                            usingRightArm = (colorPositionInt == 3) ? true : false;
 
 //                        if (PIDonTarget) {
 //
 //                            robotHandler.drive.stop();
 
-                        auto = AutoEnum.COLLECT;
+                            auto = AutoEnum.COLLECT;
 
-                        wait.reset();
-
+                            wait.reset();
+                        }
 //                    switchPID = false;
 
 //                            PIDrotationOut = 0;
@@ -1508,7 +1511,7 @@ public class WorldAuto extends WorldConfig {
                         resetEncoders();
 
 
-                        auto = AutoEnum.COLLECTGOTOPIT;
+                        auto = AutoEnum.COLLECTDRIVEBACKFROMCRYPTO;
 
                         motorCollectRight.setPower(1.0);
 
@@ -1526,8 +1529,10 @@ public class WorldAuto extends WorldConfig {
 
                     case COLLECTSTRAFFTOCENTER:
                         robotHandler.drive.mecanum.setMecanum(Math.toRadians(WorldConstants.auto.aligning.backAutoStrafeDirection[colorPositionInt]),0.6, PIDrotationOut, 1.0);
-                        if(traveledEncoderTicks(Constants.drive.countsPerInches())){
+                        if(traveledEncoderTicks(WorldConstants.drive.countsPerInches())){
 
+                            resetEncoders();
+                            auto = AutoEnum.COLLECTGOTOPIT;
                         }
                         break;
 
