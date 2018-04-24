@@ -145,8 +145,8 @@ public static final double rightDown = 0.87;
                     };
             public static final double[][] AlignDrivingOffPlatformEncoder =
                     {
-                            {33 , 24, 28},
-                            {0,0,0}
+                            {33 , 24, 18},
+                            {0,0,0}//33 , 24, 28
                     };
             public static final double[][]AlignDivingOffPlatformEncoderTillTurn =
                     {
@@ -157,11 +157,11 @@ public static final double rightDown = 0.87;
             public static final double[] AlignTurnAngle =
                     {-90, -90};
 
-            public static final double CollectDistToPit = 10;
+            public static final double CollectDistToPit = 7;//10
             public static final int collectDriveIntoPitTime = 2000;
-            public static final double GlyphDistanceToCrypto = 18;
-            public static final double columnStraffDistance = 6;
-            public static final double alignStraffDistance = 1.5;//1.5;
+            public static final double GlyphDistanceToCrypto = 14;//18
+            public static final double columnStraffDistance = 4;//6
+            public static final double alignStraffDistance = 1;//1.5;
         }
 
         public static class jewel {
