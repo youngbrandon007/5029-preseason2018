@@ -145,19 +145,32 @@ public static final double rightDown = 0.87;
                     };
             public static final double[][] AlignDrivingOffPlatformEncoder =
                     {
-                            {33 , 24, 18},
-                            {0,0,0}//33 , 24, 28
+
+                            {33 , 24, 18},//28
+                            {0,0,0},
+                            {20, 20, 20},
+                            {20, 20, 20}
                     };
             public static final double[][]AlignDivingOffPlatformEncoderTillTurn =
                     {
                             {5, 5, 5}//10
                     };
             public static final double[] AlignDriveOffPlatformDirection =
-                    {270, 90};
+                    {270, 90,270,90};
             public static final double[] AlignTurnAngle =
-                    {-90, -90};
+                    {0,0,-90, -90};
 
+            public static final double[] backAutoStrafeDirection =
+                    {0,0,0,180};
+            public static final double[][] backAutoStrafeDistance =
+                    {
+                            {},
+                            {},
+                            {20,15,10},
+                            {10,15,30}
+                    };
             public static final double CollectDistToPit = 7;//10
+
             public static final int collectDriveIntoPitTime = 2000;
             public static final double GlyphDistanceToCrypto = 14;//18
             public static final double columnStraffDistance = 4;//6
