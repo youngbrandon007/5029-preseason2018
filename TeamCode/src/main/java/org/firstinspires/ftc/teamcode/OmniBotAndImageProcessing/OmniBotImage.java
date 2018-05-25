@@ -29,6 +29,7 @@ import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.imgproc.Moments;
 
+import java.io.File;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 
@@ -90,8 +91,10 @@ public class OmniBotImage extends  OmniBotConfig{
                 Bitmap bm = Bitmap.createBitmap(img.getWidth(), img.getHeight(), Bitmap.Config.RGB_565);
                 ByteBuffer pix = img.getPixels();
                 bm.copyPixelsFromBuffer(pix);
+                telemetry.addData("size" , "" + img.getWidth() + img.getHeight());
+                telemetry.update();
                 SaveImage(bm, "original");
-                Mat crop = new Mat(bm.getHeight(), bm.getWidth(), CvType.CV_8UC3);
+                Mat crop = new Mat(bm.getHeight(), bm.getWidth(), CvType.CV_8UC3); //C3
                 Utils.bitmapToMat(bm, crop);
 //                float x = Math.min(Math.min(corners[1][0], corners[3][0]), Math.min(corners[0][0], corners[2][0]));
 //                float y = Math.min(Math.min(corners[1][1], corners[3][1]), Math.min(corners[0][1], corners[2][1]));
