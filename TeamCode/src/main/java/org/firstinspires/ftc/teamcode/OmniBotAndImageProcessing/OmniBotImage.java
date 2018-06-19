@@ -5,39 +5,29 @@ import android.graphics.Bitmap;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.vuforia.CameraCalibration;
 import com.vuforia.Image;
-import com.vuforia.Matrix34F;
 import com.vuforia.PIXEL_FORMAT;
-import com.vuforia.Tool;
-import com.vuforia.Vec3F;
 import com.vuforia.Vuforia;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 import org.firstinspires.ftc.teamcode.PineappleRobotPackage.lib.Vuforia.PineappleRelicRecoveryVuforia;
-import org.firstinspires.ftc.teamcode.RelicRecoveryFinalRobot.Constants;
+import org.opencv.android.OpenCVLoader;
 import org.opencv.android.Utils;
 import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
-import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.imgproc.Moments;
 
-import java.io.File;
 import java.nio.ByteBuffer;
-import java.util.Arrays;
 
 import static org.firstinspires.ftc.teamcode.PineappleRobotPackage.lib.Vuforia.PineappleRelicRecoveryVuforia.SaveImage;
 import static org.firstinspires.ftc.teamcode.PineappleRobotPackage.lib.Vuforia.PineappleRelicRecoveryVuforia.matToBitmap;
-import static org.firstinspires.ftc.teamcode.RelicRecoveryFinalRobot.Constants.auto.jewel.jewelState.BLUE_RED;
-import static org.firstinspires.ftc.teamcode.RelicRecoveryFinalRobot.Constants.auto.jewel.jewelState.NON_NON;
-import static org.firstinspires.ftc.teamcode.RelicRecoveryFinalRobot.Constants.auto.jewel.jewelState.RED_BLUE;
 
 @TeleOp(name = "OmniBotImage")
 public class OmniBotImage extends  OmniBotConfig{
@@ -46,6 +36,14 @@ public class OmniBotImage extends  OmniBotConfig{
     VuforiaTrackables relicTrackables;
     VuforiaTrackable relicTemplate;
     VuforiaTrackableDefaultListener listener;
+
+    static{
+        if(!OpenCVLoader.initDebug()){
+
+        }else{
+
+        }
+    }
 
     @Override
     public void init() {
@@ -109,9 +107,12 @@ public class OmniBotImage extends  OmniBotConfig{
                 //height = (x + height > crop.rows()) ? crop.rows() - x : height;
                 //Mat cropped = new Mat(crop, new Rect((int) x, (int) y, (int) width, (int) height));
                 //SaveImage(matToBitmap(cropped), "crop");
+                Scalar min = new Scalar(0,0,0);
+                Scalar max = new Scalar(100,100,255);
                 Imgproc.cvtColor(crop, crop, Imgproc.COLOR_RGB2HSV_FULL);
                 Mat mask = new Mat();
-                Core.inRange(crop, new Scalar(50, 20, 70), new Scalar(255, 255, 120), mask);
+                //new Scalar(50, 20, 70), new Scalar(255, 255, 120)
+                Core.inRange(crop, min, max, mask);
                 SaveImage(matToBitmap(mask), "mask");
                 Moments mmnts = Imgproc.moments(mask, true);
                 telemetry.addData("Data", mmnts.get_m10() / mmnts.get_m00());

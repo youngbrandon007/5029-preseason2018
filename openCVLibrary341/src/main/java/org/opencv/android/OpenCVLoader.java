@@ -119,13 +119,9 @@ public class OpenCVLoader
 
     /**
      * Loads and initializes OpenCV library using OpenCV Engine service.
-     * @param Version OpenCV library version.
-     * @param AppContext application context for connecting to the service.
-     * @param Callback object, that implements LoaderCallbackInterface for handling the connection status.
      * @return Returns true if initialization of OpenCV is successful.
      */
-    public static boolean initAsync(String Version, Context AppContext,
-            LoaderCallbackInterface Callback)
+    public static boolean initAsync()
     {
         return AsyncServiceHelper.initOpenCV(Version, AppContext, Callback);
     }
